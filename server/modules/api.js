@@ -1,7 +1,14 @@
 /* server.js */
 import express from "express";
 import cors from "cors";
-import { addUserDataRow, getAllUserData, signUpUser } from "./data.js";
+import {
+  addUserDataRow,
+  getAllUserData,
+  loginUser,
+  requireAuth,
+  signOutUser,
+  signUpUser,
+} from "./data.js";
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 
 const app = express();
@@ -27,7 +34,7 @@ app.get("/helloworld", (req, res) => {
   res.json({ message: "Hello World" });
 });
 
-app.get("/user_data", async (req, res) => {
+app.get("/user_data", requireAuth, async (req, res) => {
   let result = await getAllUserData();
   res.json(result);
 });
@@ -40,8 +47,20 @@ app.post("/sign_up", async (req, res) => {
     rowResult = await addUserDataRow(result.user.id);
   }
   res.send({
-    message: rowResult[0].user_id ? "Created User" : "User creation failed",
+    message: rowResult.id ? "Account created please login" : "Email taken",
   });
+});
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  let result = await loginUser(email, password);
+  res.send(result);
+});
+
+app.post("/logout", requireAuth, async (req, res) => {
+  const token = req.accessToken;
+  await signOutUser(token);
+  res.send({ message: "Logged out" });
 });
 
 // Start the server listening on PORT, then call the callback (second argument)
