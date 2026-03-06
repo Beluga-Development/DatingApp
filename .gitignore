@@ -3,3 +3,4 @@ DatingApp/eslint.config.js
 DatingApp/.expo
 DatingApp/dist
 DatingApp/build
+server/.env

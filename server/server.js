@@ -1,7 +1,7 @@
 /* server.js */
 import express from "express";
 import cors from "cors";
-
+import { getAllUserData } from "./modules/data.js";
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 const PORT = process.env.PORT || 9000;
 
@@ -26,6 +26,11 @@ app.use((req, _res, next) => {
 
 app.get("/helloworld", (req, res) => {
   res.json({ message: "Hello World" });
+});
+
+app.get("/user_data", async (req, res) => {
+  let result = await getAllUserData();
+  res.json(result);
 });
 
 // Start the server listening on PORT, then call the callback (second argument)

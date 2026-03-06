@@ -25,6 +25,18 @@ const data = {
     let payload = await response.json();
     return payload;
   },
+  getAllUserData: async () => {
+    let response = await fetch(serverRoute("user_data"), {
+      headers,
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.status}`);
+    }
+    let payload = await response.json();
+    return payload;
+  },
 };
 
 export { data };
