@@ -1,14 +1,16 @@
-import { Text, Button, View } from "react-native";
+import { Text, Button, View, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as api from "./util/api.js";
 import { useState } from "react";
 
 function App() {
   const [text, setText] = useState("Before Call");
-  const [loginText, setLoginText] = useState("Login or Sign up");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [userData, setUserData] = useState(
     "Before calling to select all user data",
   );
+  const [confirmation, setConfirmation] = useState("");
 
   const getData = async () => {
     try {
@@ -26,6 +28,14 @@ function App() {
       setUserData(`Request failed: ${error.message}`);
     }
   };
+  const signUpUser = async () => {
+    try {
+      let result = await api.auth.signUp(email, password);
+      setConfirmation(result.message);
+    } catch (error) {
+      setConfirmation(`Request failed: ${error.message}`);
+    }
+  };
 
   return (
     <>
@@ -41,9 +51,22 @@ function App() {
         <View
           style={{ padding: 20, backgroundColor: "#bbbbbb", borderRadius: 12 }}
         >
-          <Text>{loginText}</Text>
+          <Text style={{ margin: "auto" }}>Login or Sign up</Text>
+          <TextInput
+            style={{ borderWidth: 1 }}
+            value={email}
+            placeholder="Enter your email"
+            onChangeText={setEmail}
+          />
+          <TextInput
+            style={{ borderWidth: 1 }}
+            placeholder="Enter your password"
+            value={password}
+            onChangeText={setPassword}
+          />
           <Button title="Login" onPress={getData} />
-          <Button title="Sign Up" onPress={getData} />
+          <Button title="Sign Up" onPress={signUpUser} />
+          <Text>{confirmation}</Text>
         </View>
         <Text>Testing getting all user data</Text>
         <View

@@ -32,6 +32,10 @@ app.get("/user_data", async (req, res) => {
   res.json(result);
 });
 
+app.post("/sign_up", async (req, res) => {
+  res.send({ message: "Message back to client" });
+});
+
 // Start the server listening on PORT, then call the callback (second argument)
 const startServer = (port) => {
   app.listen(port, () => console.log(`Listening on port ${port}`));

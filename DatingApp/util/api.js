@@ -39,4 +39,16 @@ const data = {
   },
 };
 
-export { data };
+const auth = {
+  signUp: async (email, password) => {
+    let response = await fetch(serverRoute("sign_up"), {
+      headers,
+      method: "POST",
+      body: JSON.stringify({ email: email, password: password }),
+    });
+    let payload = await response.json();
+    return payload;
+  },
+};
+
+export { data, auth };

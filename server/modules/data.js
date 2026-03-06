@@ -12,4 +12,5 @@ const getAllUserData = async () => {
   }
 };
 
+
 export { getAllUserData };
