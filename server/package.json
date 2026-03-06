@@ -1,0 +1,17 @@
+{
+  "name": "dating-app",
+  "version": "1.0.0",
+  "description": "Server for dating app",
+  "license": "ISC",
+  "author": "Beluga",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}
