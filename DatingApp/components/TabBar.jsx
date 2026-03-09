@@ -1,12 +1,48 @@
 import { View, StyleSheet } from "react-native";
 import { useLinkBuilder, useTheme } from "@react-navigation/native";
 import TabBarButton from "./TabBarButton";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import { useState } from "react";
 export function TabBar({ state, descriptors, navigation }) {
   const { colors } = useTheme();
   const { buildHref } = useLinkBuilder();
+  const [dimensions, setDimensions] = useState({ height: 70, width: 275 });
+
+  const buttonWidth = dimensions.width / state.routes.length;
+
+  const onTabbarLayout = (e) => {
+    setDimensions({
+      height: e.nativeEvent.layout.height,
+      width: e.nativeEvent.layout.width,
+    });
+  };
+
+  const tabPositionX = useSharedValue(0);
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: tabPositionX.value }],
+    };
+  });
 
   return (
     <View style={styles.tabbar}>
+      <Animated.View
+        style={[
+          animatedStyle,
+          {
+            position: "absolute",
+            backgroundColor: "#fa7fb5",
+            borderRadius: 30,
+            marginHorizontal: 10,
+            height: dimensions.height - 15,
+            width: buttonWidth - 25,
+          },
+        ]}
+      />
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
@@ -19,6 +55,9 @@ export function TabBar({ state, descriptors, navigation }) {
         const isFocused = state.index === index;
 
         const onPress = () => {
+          tabPositionX.value = withSpring(buttonWidth * index, {
+            duration: 400,
+          });
           const event = navigation.emit({
             type: "tabPress",
             target: route.key,
@@ -44,7 +83,7 @@ export function TabBar({ state, descriptors, navigation }) {
             onLongPress={onLongPress}
             isFocused={isFocused}
             routeName={route.name}
-            color={isFocused ? colors.primary : colors.text}
+            color={isFocused ? "#fff" : colors.text}
             label={label}
           />
           //   <PlatformPressable

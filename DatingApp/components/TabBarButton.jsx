@@ -22,7 +22,7 @@ export default function TabBarButton({
   useEffect(() => {
     scale.value = withSpring(
       typeof isFocused === "boolean" ? (isFocused ? 1 : 0) : isFocused,
-      { duration: 350 },
+      { duration: 250 },
     );
   }, [scale, isFocused]);
 
@@ -31,15 +31,30 @@ export default function TabBarButton({
     return { opacity };
   });
 
+  const animatedIconStyle = useAnimatedStyle(() => {
+    const scaleValue = interpolate(scale.value, [0, 1], [1, 1.2]);
+    const top = interpolate(scale.value, [0, 1], [0, 9]);
+    return {
+      transform: [
+        {
+          scale: scaleValue,
+        },
+      ],
+      top,
+    };
+  });
+
   return (
     <Pressable
       onPress={onPress}
       onLongPress={onLongPress}
       style={styles.tabbarItem}
     >
-      {icon[routeName]({
-        color: isFocused ? colors.primary : colors.text,
-      })}
+      <Animated.View style={animatedIconStyle}>
+        {icon[routeName]({
+          color: isFocused ? "#fff" : colors.text,
+        })}
+      </Animated.View>
       <Animated.Text
         style={[
           { color: isFocused ? colors.primary : colors.text },
