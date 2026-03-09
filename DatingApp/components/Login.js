@@ -42,12 +42,14 @@ function Login({ setIsLoggedIn }) {
       >
         <Text style={{ margin: "auto" }}>Login or Sign up</Text>
         <TextInput
+          textContentType="emailAddress"
           style={{ borderWidth: 1 }}
           value={email}
           placeholder="Enter your email"
           onChangeText={setEmail}
         />
         <TextInput
+          textContentType="password"
           style={{ borderWidth: 1 }}
           placeholder="Enter your password"
           value={password}
