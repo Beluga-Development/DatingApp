@@ -1,8 +1,8 @@
 import { Redirect, Tabs } from "expo-router";
 import { useContext } from "react";
 import { SessionContext } from "../../util/session";
-
-export default function TabsLayout() {
+import { TabBar } from "../../components/TabBar";
+export default function TabsLayout(props) {
   const { isLoggedIn } = useContext(SessionContext);
 
   if (!isLoggedIn) {
@@ -10,7 +10,7 @@ export default function TabsLayout() {
   }
 
   return (
-    <Tabs>
+    <Tabs tabBar={(props) => <TabBar {...props} />}>
       <Tabs.Screen
         name="index"
         options={{ title: "Home", headerShown: false }}
