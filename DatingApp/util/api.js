@@ -90,4 +90,4 @@ const auth = {
   },
 };
 
-export { data, auth };
+export { data, auth, getAccessToken };

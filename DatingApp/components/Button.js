@@ -5,7 +5,7 @@ import { Pressable, Text } from "react-native";
 
 import style from "../style.js";
 
-export default (props) => {
+function Button(props) {
   const [isPressed, setIsPressed] = useState(false);
   const pressIn = () => setIsPressed(true);
   const pressOut = () => setIsPressed(false);
@@ -34,4 +34,5 @@ export default (props) => {
       )}
     </Pressable>
   );
-};
+}
+export default Button;
