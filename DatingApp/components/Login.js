@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
-import { Button, Text, TextInput, View } from "react-native";
+import { useState } from "react";
+import { View, Text, TextInput, Pressable, StatusBar } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as api from "../util/api.js";
+import styles, { palette } from "../style.js";
 
 function Login({ setIsLoggedIn }) {
   const [email, setEmail] = useState("");
@@ -27,39 +31,63 @@ function Login({ setIsLoggedIn }) {
   };
 
   return (
-    <>
-      <Text>
-        Login and sign up. After sign up you have to click authorization link in
-        email sent to the sign up email. If you spam multiple sign ups it will
-        block you and you will have to wait
-      </Text>
-      <View
-        style={{
-          padding: 20,
-          backgroundColor: "#bbbbbb",
-          borderRadius: 12,
-        }}
-      >
-        <Text style={{ margin: "auto" }}>Login or Sign up</Text>
+    <SafeAreaView style={styles.loginSafeArea} edges={["top", "bottom"]}>
+      <StatusBar backgroundColor={palette.primary} barStyle="dark-content" />
+      <View style={styles.loginContainer}>
+
+        <Text style={styles.loginAppName}>LookingForLove</Text>
+
+        <Text style={styles.loginHeading}>Create an account</Text>
+        <Text style={styles.loginSubheading}>
+          Enter your email to sign up for this app
+        </Text>
+
         <TextInput
+          style={styles.loginInput}
+          placeholder="email@domain.com"
+          placeholderTextColor={palette.border}
+          keyboardType="email-address"
+          autoCapitalize="none"
           textContentType="emailAddress"
-          style={{ borderWidth: 1 }}
           value={email}
-          placeholder="Enter your email"
           onChangeText={setEmail}
         />
-        <TextInput
-          textContentType="password"
-          style={{ borderWidth: 1 }}
-          placeholder="Enter your password"
-          value={password}
-          onChangeText={setPassword}
-        />
-        <Button title="Login" onPress={loginUser} />
-        <Button title="Sign Up" onPress={signUpUser} />
-        <Text>{confirmation}</Text>
+
+        <Pressable
+          style={({ pressed }) => [styles.loginContinueBtn, pressed && styles.loginBtnPressed]}
+          onPress={loginUser}
+        >
+          <Text style={styles.loginContinueBtnText}>Continue</Text>
+        </Pressable>
+
+        <View style={styles.loginDividerRow}>
+          <View style={styles.loginDividerLine} />
+          <Text style={styles.loginDividerText}>or</Text>
+          <View style={styles.loginDividerLine} />
+        </View>
+
+        <Pressable style={({ pressed }) => [styles.loginSocialBtn, pressed && styles.loginBtnPressed]}>
+          <AntDesign name="google" size={18} color={palette.text} style={styles.loginSocialIcon} />
+          <Text style={styles.loginSocialBtnText}>Continue with Google</Text>
+        </Pressable>
+
+        <Pressable style={({ pressed }) => [styles.loginSocialBtn, styles.loginSocialBtnLast, pressed && styles.loginBtnPressed]}>
+          <FontAwesome6 name="apple" size={18} color={palette.text} style={styles.loginSocialIcon} />
+          <Text style={styles.loginSocialBtnText}>Continue with Apple</Text>
+        </Pressable>
+
+        <Text style={styles.loginTerms}>
+          By clicking continue, you agree to our{" "}
+          <Text style={styles.loginTermsLink}>Terms of Service</Text>
+          {"\n"}and <Text style={styles.loginTermsLink}>Privacy Policy</Text>
+        </Text>
+
+        {confirmation ? (
+          <Text style={styles.loginConfirmation}>{confirmation}</Text>
+        ) : null}
       </View>
-    </>
+    </SafeAreaView>
   );
 }
+
 export default Login;
