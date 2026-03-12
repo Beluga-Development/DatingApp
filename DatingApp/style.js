@@ -1,11 +1,14 @@
-import { StyleSheet } from "react-native";
+import {StyleSheet} from "react-native";
 
 export const MARGIN = 10;
 
 export const palette = {
-    primary: '#ed3c89',
+    primary: '#FFCAE1',
+    secondary: '#FFCAE1',
+    contrast: '#848484',
+    accent: '#CACACA',
     border: '#f1abc6',
-    text: '#828282'
+    text: '#000000'
 };
 
 export default StyleSheet.create({
@@ -99,13 +102,24 @@ export default StyleSheet.create({
     },
     inputText: {
         margin: MARGIN,
-        borderWidth: 2,
         fontFamily: 'Bitcount',
-        borderRadius: 12,
-        borderColor: palette.border,
-        padding: 10,
-        fontSize: 24,
+        borderRadius: 36,
+        backgroundColor: palette.primary,
+        paddingLeft: 25,
+        fontSize: 18,
         color: palette.text
+    },
+    inputTextTitle: {
+        marginLeft: 35,
+        fontSize: 18,
+        fontWeight: 'bold'
+    },
+    profilePicture: {
+        width: 160,
+        height: 160,
+        borderRadius: 160 / 2,
+        overflow: "hidden"
+
     },
     icon: {
         color: palette.text
