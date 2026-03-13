@@ -3,7 +3,7 @@ import {StyleSheet} from "react-native";
 export const MARGIN = 10;
 
 export const palette = {
-    primary: '#FFCAE1',
+    primary: '#FF9FC9',
     secondary: '#FFCAE1',
     contrast: '#848484',
     accent: '#CACACA',
@@ -105,7 +105,20 @@ export default StyleSheet.create({
         fontFamily: 'Bitcount',
         borderRadius: 36,
         backgroundColor: palette.primary,
+        padding: 4,
         paddingLeft: 25,
+        paddingRight: 25,
+        fontSize: 18,
+        color: palette.text
+    },
+    inputDate: {
+        margin: MARGIN,
+        fontFamily: 'Bitcount',
+        borderRadius: 36,
+        backgroundColor: palette.primary,
+        padding: 6,
+        paddingLeft: 25,
+        paddingRight: 25,
         fontSize: 18,
         color: palette.text
     },
@@ -117,6 +130,7 @@ export default StyleSheet.create({
     profilePicture: {
         width: 160,
         height: 160,
+        backgroundColor: palette.accent,
         borderRadius: 160 / 2,
         overflow: "hidden"
 

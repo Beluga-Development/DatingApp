@@ -1,10 +1,16 @@
 ﻿import {useState} from "react";
-import {Image, Text, TextInput, View} from "react-native";
+import {Button, Image, Text, TextInput, View} from "react-native";
 
+import CalenderInput from "./CalenderInput";
 import branding from "../style.js";
 
 function ProfileCreation() {
-    const [firstName, onChangeText] = useState();
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+
+    const [gender, setGender] = useState("");
+
+    const [dateOfBirth, setDateOfBirth] = useState(new Date());
 
     return (
         <>
@@ -16,7 +22,7 @@ function ProfileCreation() {
                 </View>
 
                 <View id={'ProfilePicture'} style={{marginBottom: 50, alignItems: 'center'}}>
-                    <Image source={require('../assets/PlaceholderHolderUser.png')}
+                    <Image
                            style={branding.profilePicture}
                     />
                 </View>
@@ -26,7 +32,7 @@ function ProfileCreation() {
                         <Text style={branding.inputTextTitle}>First Name</Text>
                         <TextInput id={'FirstNameInput'}
                                    style={[{marginTop: 0}, branding.inputText]}
-                                   onChangeText={onChangeText}
+                                   onChangeText={setFirstName}
                                    value={firstName}
                                    placeholder="First Name"
                         />
@@ -36,29 +42,24 @@ function ProfileCreation() {
                         <Text style={branding.inputTextTitle}>Last Name</Text>
                         <TextInput id={'LastNameInput'}
                                    style={[{marginTop: 0}, branding.inputText]}
-                                   onChangeText={onChangeText}
-                                   value={firstName}
+                                   onChangeText={setLastName}
+                                   value={lastName}
                                    placeholder="Last Name"
                         />
                     </View>
                 </View>
 
                 <View id={'PersonalInfoView'} style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <View id={'DateOfBirthView'} style={{flex: 2}}>
+                    <View id={'DateOfBirthView'}>
                         <Text style={branding.inputTextTitle}>Date of Birth</Text>
-                        <TextInput id={'FirstNameInput'}
-                                   style={[{marginTop: 0}, branding.inputText]}
-                                   onChangeText={onChangeText}
-                                   value={firstName}
-                                   placeholder="Date"
-                        />
+                        <CalenderInput date={dateOfBirth} onChangeDate={setDateOfBirth} />
                     </View>
-                    <View id={'GenderView'} style={{flex: 1}}>
+                    <View id={'GenderView'} style={{width: "35%"}}>
                         <Text style={branding.inputTextTitle}>Gender</Text>
                         <TextInput id={'GenderInput'}
                                    style={[{marginTop: 0}, branding.inputText]}
-                                   onChangeText={onChangeText}
-                                   value={firstName}
+                                   onChangeText={setGender}
+                                   value={gender}
                                    placeholder="Gender"
                         />
                     </View>

@@ -4,6 +4,8 @@ import { Button, Text, View } from "react-native";
 import { SessionContext } from "../../util/session";
 import * as api from "../../util/api.js";
 
+import ProfileCreation from "../../components/ProfileCreation"
+
 export default function ProfileScreen() {
   const { setIsLoggedIn } = useContext(SessionContext);
   const [profileData, setProfileData] = useState();
@@ -23,18 +25,7 @@ export default function ProfileScreen() {
 
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Profile</Text>
-      <Text
-        style={{
-          width: "80%",
-
-          backgroundColor: "#777777",
-          borderRadius: 12,
-          margin: 10,
-        }}
-      >
-        {profileData}
-      </Text>
+     <ProfileCreation/>
       <Button title="Log Out" onPress={handleLogout} />
     </View>
   );

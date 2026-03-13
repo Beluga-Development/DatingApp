@@ -11,6 +11,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@react-native-community/datetimepicker": "^8.6.0",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-vector-icons/feather": "^12.4.1",
     "babel-preset-expo": "~54.0.10",
