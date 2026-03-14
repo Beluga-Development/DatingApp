@@ -45,6 +45,20 @@ const getAllUserData = async () => {
   }
 };
 
+const getAllUserProfileData = async (userId) => {
+  try {
+    const { data, error } = await 
+      db.from("user_data")
+      .select("id, name, profile_data(*)")
+      .eq("id", userId);
+    if (error) console.error(error);
+    console.log("CONSOLE LOG OF PROFILE DATA", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 const signUpUser = async (email, passowrd) => {
   try {
     const { data, error } = await db.auth.signUp({
@@ -89,6 +103,7 @@ const loginUser = async (email, password) => {
         expires_at: data?.session?.expires_at || null,
         token_type: data?.session?.token_type || null,
       },
+
     };
 
     console.log("SIGN-IN-USER CONSOLE LOG OF DATA", result);
@@ -123,6 +138,7 @@ const addUserDataRow = async (authUserId) => {
 };
 export {
   getAllUserData,
+  getAllUserProfileData,
   signUpUser,
   addUserDataRow,
   loginUser,

@@ -49,6 +49,26 @@ const data = {
     let payload = await response.json();
     return payload;
   },
+
+  getProfileData: async (userId) => {
+    let token = await getAccessToken();
+    let response = await fetch(serverRoute("profile_data"), {
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+      body: JSON.stringify({ id: userId }),
+    });
+    let payload = await response.json();
+    console.log("profile data payload:", payload);
+    if(payload?.length > 0){
+      await save("profileData", JSON.stringify(payload));
+    }
+    return payload;
+  }
+
 };
 
 const auth = {

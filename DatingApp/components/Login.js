@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, Text, TextInput, View } from "react-native";
 import * as api from "../util/api.js";
 
-function Login({ setIsLoggedIn }) {
+function Login({ setIsLoggedIn, setIsProfileComplete }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
@@ -21,6 +21,10 @@ function Login({ setIsLoggedIn }) {
       let result = await api.auth.loginUser(email, password);
       setConfirmation(result.message);
       setIsLoggedIn(Boolean(result?.session?.access_token));
+      if(result?.session?.access_token){
+        let profileData = await api.data.getProfileData(result.session.user.id);
+        setIsProfileComplete(Boolean(profileData?.profile_data));
+      }
     } catch (error) {
       setConfirmation(`Request failed: ${error.message}`);
     }

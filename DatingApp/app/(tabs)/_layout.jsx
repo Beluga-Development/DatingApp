@@ -4,9 +4,13 @@ import { SessionContext } from "../../util/session";
 import { TabBar } from "../../components/TabBar";
 export default function TabsLayout(props) {
   const { isLoggedIn } = useContext(SessionContext);
-
+  const { isProfileComplete } = useContext(SessionContext);
+  
   if (!isLoggedIn) {
     return <Redirect href="/login" />;
+  }
+  else if(!isProfileComplete){
+    return <Redirect href="/profile_creation" />;
   }
 
   return (

@@ -4,6 +4,7 @@ import cors from "cors";
 import {
   addUserDataRow,
   getAllUserData,
+  getAllUserProfileData,
   loginUser,
   requireAuth,
   signOutUser,
@@ -61,6 +62,12 @@ app.post("/logout", requireAuth, async (req, res) => {
   const token = req.accessToken;
   await signOutUser(token);
   res.send({ message: "Logged out" });
+});
+
+app.get("/profile_data", requireAuth, async (req, res) => {
+  const userId = req.body.id;
+  let result = await getAllUserProfileData(userId);
+  res.send(result);
 });
 
 // Start the server listening on PORT, then call the callback (second argument)

@@ -8,11 +8,17 @@ import { Text } from "react-native";
 
 export default function LoginScreen() {
   const { setIsLoggedIn } = useContext(SessionContext);
-  const [loading, setLoading] = useState(true);
-  const handleSetIsLoggedIn = (value) => {
-    setIsLoggedIn(value);
-    if (value) {
-      router.replace("/(tabs)");
+  const { setIsProfileComplete } = useContext(SessionContext);
+
+  const handleSetIsLoggedIn = (isLoggedIn, isProfileComplete) => {
+    setIsLoggedIn(isLoggedIn);
+    if (isLoggedIn) {
+      setIsProfileComplete(isProfileComplete);
+      if(isProfileComplete){
+        router.replace("/(tabs)");
+      } else {
+        router.replace("/profile_creation");
+      }
     }
     setLoading(false);
   };
