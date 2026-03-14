@@ -116,7 +116,7 @@ export default StyleSheet.create({
         fontFamily: 'Bitcount',
         borderRadius: 36,
         backgroundColor: palette.primary,
-        padding: 6,
+        padding: 4,
         paddingLeft: 25,
         paddingRight: 25,
         fontSize: 18,

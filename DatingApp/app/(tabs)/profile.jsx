@@ -1,7 +1,7 @@
-import { router } from "expo-router";
-import { useContext, useState } from "react";
-import { Button, Text, View } from "react-native";
-import { SessionContext } from "../../util/session";
+import {router} from "expo-router";
+import {useContext, useState} from "react";
+import {Button, View} from "react-native";
+import {SessionContext} from "../../util/session";
 import * as api from "../../util/api.js";
 
 import ProfileCreation from "../../components/ProfileCreation"
@@ -24,7 +24,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <View style={{flex: 1, alignItems: "center", justifyContent: "flex-start", marginTop: "10%"}}>
      <ProfileCreation/>
       <Button title="Log Out" onPress={handleLogout} />
     </View>

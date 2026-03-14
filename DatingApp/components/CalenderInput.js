@@ -1,10 +1,10 @@
-﻿import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+﻿import {useState} from "react";
+import {Pressable, Text, View} from "react-native";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 import branding from "../style.js";
 
-function CalenderInput({ date, onChangeDate }) {
+function CalenderInput({date, onChangeDate, style}) {
     const [showDatePicker, setShowDatePicker] = useState(false);
 
     const monthNames = [
@@ -17,9 +17,13 @@ function CalenderInput({ date, onChangeDate }) {
     const year = String(date.getFullYear());
 
     return (
-        <View>
-            <Pressable onPress={() => setShowDatePicker(true)} style={[branding.inputDate, {marginTop: 0}]}>
-                <Text>{`${day} / ${month} / ${year}`}</Text>
+        <View style={style}>
+            <Pressable onPress={() => setShowDatePicker(true)} style={{flexDirection: 'row'}}>
+                <Text style={[branding.inputDate, {marginTop: 0, marginRight: 2}]}>{`${day}`}</Text>
+                <Text style={{fontWeight: "bold", fontSize: 22}}>/</Text>
+                <Text style={[branding.inputDate, {marginTop: 0, marginLeft: 2, marginRight: 2}]}>{`${month}`}</Text>
+                <Text style={{fontWeight: "bold", fontSize: 22}}>/</Text>
+                <Text style={[branding.inputDate, {marginTop: 0, marginLeft: 2}]}>{`${year}`}</Text>
             </Pressable>
 
             {showDatePicker && (
