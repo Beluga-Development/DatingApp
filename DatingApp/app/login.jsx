@@ -7,6 +7,7 @@ import * as api from "../util/api.js";
 import { Text } from "react-native";
 
 export default function LoginScreen() {
+  const [loading, setLoading] = useState(true);
   const { setIsLoggedIn } = useContext(SessionContext);
   const { setIsProfileComplete } = useContext(SessionContext);
 
