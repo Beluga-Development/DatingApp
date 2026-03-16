@@ -67,7 +67,23 @@ const data = {
       await save("profileData", JSON.stringify(payload));
     }
     return payload;
-  }
+  },
+
+  saveProfileData: async (profileData) => {
+    console.log("API SAVE PROFILE DATA CALLED WITH", profileData);
+    let token = await getAccessToken();
+    let response = await fetch(serverRoute("profile_data"), {
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      method: "POST",
+      body: JSON.stringify(profileData),
+    });
+    let payload = await response.json();
+    return payload;
+  },
 
 };
 

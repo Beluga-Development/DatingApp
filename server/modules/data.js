@@ -123,6 +123,18 @@ const signOutUser = async (accessToken) => {
   }
 };
 
+const getCurrentUser = async () => {
+  try {
+    const { data : { user }, error } = await db.auth.getUser();
+    if (error) {
+      console.error(error);
+    }
+    return user;
+  }catch (err) {
+      console.error(err);
+    }
+  };
+
 const addUserDataRow = async (authUserId) => {
   try {
     const { data, error } = await db
@@ -136,12 +148,46 @@ const addUserDataRow = async (authUserId) => {
     console.error(err);
   }
 };
+
+const saveProfileData = async (profileData, userId) => {
+  try {
+    // const {data: testUserData, error: testUserError} = await db
+    // .from("user_data")
+    // .select("id")
+    //*userId is being passed properly but userData is not being found for some reason
+    await db.auth.refreshSession();
+    const { data: userData, error: userError } = await db
+    .from("user_data")
+    .select("*")
+    .eq('user_id', userId)
+    .single();
+    console.log("USER DATA IN SAVE PROFILE DATA", userData);
+    if (userError) {
+      console.error("ERROR FETCHING USER DATA IN SAVE PROFILE DATA", userError);
+      return;
+    }
+    profileData.fk_user_data = userData.id;
+    const { data, error } = await db
+      .from("profile_data")
+      .insert({...profileData})
+      .select();
+    if (error) console.error(error);
+    console.log("SAVE PROFILE DATA", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+
 export {
   getAllUserData,
   getAllUserProfileData,
   signUpUser,
+  getCurrentUser,
   addUserDataRow,
   loginUser,
   requireAuth,
   signOutUser,
+  saveProfileData,
 };

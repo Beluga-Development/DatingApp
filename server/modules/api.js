@@ -9,6 +9,8 @@ import {
   requireAuth,
   signOutUser,
   signUpUser,
+  saveProfileData,
+  getCurrentUser,
 } from "./data.js";
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 
@@ -67,6 +69,17 @@ app.post("/logout", requireAuth, async (req, res) => {
 app.get("/profile_data", requireAuth, async (req, res) => {
   const userId = req.body.id;
   let result = await getAllUserProfileData(userId);
+  res.send(result);
+});
+
+app.post("/profile_data", requireAuth, async (req, res) => {
+  const profileData = req.body;
+  const user = await getCurrentUser(req.headers.authorization);
+  console.log("CURRENT USER", user);
+  const userId = user?.id;
+    console.log("CURRENT USERID", user?.id);
+  let result = await saveProfileData( profileData, userId );
+  console.log("RESULT OF SAVE PROFILE DATA", result);
   res.send(result);
 });
 
