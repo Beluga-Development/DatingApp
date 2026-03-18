@@ -1,6 +1,7 @@
 import {StyleSheet} from "react-native";
 
 export const MARGIN = 10;
+const FONT_FAMILY = "Inter";
 
 export const palette = {
     primary: '#FF9FC9',
@@ -8,20 +9,22 @@ export const palette = {
     contrast: '#848484',
     accent: '#CACACA',
     border: '#f1abc6',
+    white: '#ffffff',
+    black: '#000000',
     text: '#000000'
 };
 
 export default StyleSheet.create({
     header: {
         fontSize: 24,
-        fontFamily: 'Bitcount',
+        fontFamily: FONT_FAMILY,
         color: palette.text,
         textAlign: 'center'
     },
     list: {
         marginTop: 4,
         borderTopWidth: 4,
-        fontFamily: 'Bitcount',
+        fontFamily: FONT_FAMILY,
         borderBottomWidth: 4,
         marginBottom: 4,
         borderColor: palette.border,
@@ -31,7 +34,7 @@ export default StyleSheet.create({
     app: {
         marginTop: 50,
         backgroundColor: palette.primary,
-        fontFamily: 'Bitcount',
+        fontFamily: FONT_FAMILY,
         flex: 1
     },
     prompt: {
@@ -47,7 +50,7 @@ export default StyleSheet.create({
     promptText: {
         margin: MARGIN,
         fontSize: 20,
-        fontFamily: 'Bitcount',
+        fontFamily: FONT_FAMILY,
         color: palette.text,
         textAlign: 'center'
     },
@@ -57,21 +60,19 @@ export default StyleSheet.create({
     },
     button: {
         margin: MARGIN,
-        borderWidth: 1,
-        borderBottomWidth: 4,
-        borderRightWidth: 4,
-        borderRadius: 12,
+        borderRadius: 36,
         color: palette.text,
         borderColor: palette.border,
-        backgroundColor: palette.primary,
+        backgroundColor: palette.black,
         padding: 10,
         alignItems: 'center',
-        fontFamily: 'Bitcount',
+        fontFamily: FONT_FAMILY,
     },
     buttonText: {
         fontSize: 20,
-        fontFamily: 'Bitcount',
-        color: palette.text,
+        fontWeight: "bold",
+        fontFamily: FONT_FAMILY,
+        color: palette.white,
         textAlign: 'center'
     },
     buttonPressed: {
@@ -85,24 +86,24 @@ export default StyleSheet.create({
         borderColor: palette.border,
         padding: 10,
         alignItems: 'center',
-        fontFamily: 'Bitcount',
+        fontFamily: FONT_FAMILY,
     },
     listItem: {
         margin: MARGIN,
         borderWidth: 2,
         borderRadius: 12,
-        fontFamily: 'Bitcount',
+        fontFamily: FONT_FAMILY,
         borderColor: palette.border,
         padding: 10
     },
     listItemText: {
         fontSize: 24,
-        fontFamily: 'Bitcount',
+        fontFamily: FONT_FAMILY,
         color: palette.text
     },
     inputText: {
         margin: MARGIN,
-        fontFamily: 'Bitcount',
+        fontFamily: FONT_FAMILY,
         borderRadius: 36,
         backgroundColor: palette.primary,
         padding: 4,
@@ -113,7 +114,7 @@ export default StyleSheet.create({
     },
     inputDate: {
         margin: MARGIN,
-        fontFamily: 'Bitcount',
+        fontFamily: FONT_FAMILY,
         borderRadius: 36,
         backgroundColor: palette.primary,
         padding: 4,
