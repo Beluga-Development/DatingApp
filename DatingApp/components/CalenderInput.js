@@ -21,7 +21,7 @@ function CalenderInput({date, onChangeDate, style}) {
             <Pressable onPress={() => setShowDatePicker(true)} style={{flexDirection: 'row'}}>
                 <Text style={[branding.inputDate, {marginTop: 0, marginRight: 2}]}>{`${day}`}</Text>
                 <Text style={{fontWeight: "bold", fontSize: 22}}>/</Text>
-                <Text style={[branding.inputDate, {marginTop: 0, marginLeft: 2, marginRight: 2}]}>{`${month}`}</Text>
+                <Text style={[branding.inputDate, {marginTop: 0, marginHorizontal: 2}]}>{`${month}`}</Text>
                 <Text style={{fontWeight: "bold", fontSize: 22}}>/</Text>
                 <Text style={[branding.inputDate, {marginTop: 0, marginLeft: 2}]}>{`${year}`}</Text>
             </Pressable>

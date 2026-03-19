@@ -23,7 +23,7 @@ export default function ProfileCreationScreen () {
   };
 
     return (
-        <SafeAreaView style={{ flex: 1, padding: 16 }}>
+        <SafeAreaView style={{ flex: 1}}>
             <ProfileCreation/>
             <Button title="Log Out" onPress={handleLogout} />
         </SafeAreaView>

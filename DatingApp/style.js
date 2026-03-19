@@ -107,8 +107,7 @@ export default StyleSheet.create({
         borderRadius: 36,
         backgroundColor: palette.primary,
         padding: 4,
-        paddingLeft: 25,
-        paddingRight: 25,
+        paddingHorizontal: 25,
         fontSize: 18,
         color: palette.text
     },
@@ -118,8 +117,7 @@ export default StyleSheet.create({
         borderRadius: 36,
         backgroundColor: palette.primary,
         padding: 4,
-        paddingLeft: 25,
-        paddingRight: 25,
+        paddingHorizontal: 20,
         fontSize: 18,
         color: palette.text
     },
@@ -127,6 +125,16 @@ export default StyleSheet.create({
         marginLeft: 35,
         fontSize: 18,
         fontWeight: 'bold'
+    },
+    dropDownInput: {
+        margin: MARGIN,
+        marginTop: 0,
+        fontFamily: FONT_FAMILY,
+        borderRadius: 36,
+        backgroundColor: palette.primary,
+        padding: 4,
+        paddingHorizontal: 25,
+        color: palette.text
     },
     profilePicture: {
         width: 160,
