@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import {
   addUserDataRow,
+  getAllInterests,
   getAllUserData,
   loginUser,
   requireAuth,
@@ -37,6 +38,11 @@ app.get("/helloworld", (req, res) => {
 app.get("/user_data", requireAuth, async (req, res) => {
   let result = await getAllUserData();
   res.json(result);
+});
+
+app.get("/interests", async (req, res) => {
+  let result = await getAllInterests();
+  res.send(result);
 });
 
 app.post("/sign_up", async (req, res) => {

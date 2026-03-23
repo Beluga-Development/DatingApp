@@ -121,7 +121,20 @@ const addUserDataRow = async (authUserId) => {
     console.error(err);
   }
 };
+
+const getAllInterests = async () => {
+  try {
+    const { data, error } = await db.from("interests").select();
+    if (error) console.error(error);
+    console.log("GET ALL INTERESTS");
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export {
+  getAllInterests,
   getAllUserData,
   signUpUser,
   addUserDataRow,
