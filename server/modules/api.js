@@ -4,7 +4,7 @@ import cors from "cors";
 import {
   addUserDataRow,
   getAllInterests,
-  getAllUserData,
+  getUserData,
   loginUser,
   requireAuth,
   signOutUser,
@@ -35,11 +35,6 @@ app.get("/helloworld", (req, res) => {
   res.json({ message: "Hello World" });
 });
 
-app.get("/user_data", requireAuth, async (req, res) => {
-  let result = await getAllUserData();
-  res.json(result);
-});
-
 app.get("/interests", async (req, res) => {
   let result = await getAllInterests();
   res.send(result);
@@ -55,6 +50,11 @@ app.post("/sign_up", async (req, res) => {
   res.send({
     message: rowResult.id ? "Account created please login" : "Email taken",
   });
+});
+
+app.post("/user_data", requireAuth, async (req, res) => {
+  let result = await getUserData(req);
+  res.send(result);
 });
 
 app.post("/login", async (req, res) => {

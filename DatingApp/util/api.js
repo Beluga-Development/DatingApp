@@ -19,6 +19,21 @@ const getAccessToken = async () => {
 const serverRoute = (route) => `${API_IP}:${API_PORT}/${route}`;
 
 const data = {
+  getUserData: async () => {
+    const token = await getAccessToken();
+
+    let response = await fetch(serverRoute("user_data"), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = await response.json();
+    return payload;
+  },
   getAllInterests: async () => {
     let response = await fetch(serverRoute("interests"), {
       headers,
@@ -42,23 +57,6 @@ const data = {
       throw new Error(`Request failed: ${response.status}`);
     }
 
-    let payload = await response.json();
-    return payload;
-  },
-  getAllUserData: async () => {
-    let token = await getAccessToken();
-    let response = await fetch(serverRoute("user_data"), {
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      method: "GET",
-    });
-
-    if (!response.ok) {
-      throw new Error(`Request failed: ${response.status}`);
-    }
     let payload = await response.json();
     return payload;
   },

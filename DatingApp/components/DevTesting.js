@@ -21,14 +21,6 @@ function DevTesting() {
       setText(`Request failed: ${error.message}`);
     }
   };
-  const getUsersData = async () => {
-    try {
-      let result = await api.data.getAllUserData();
-      setUserData(JSON.stringify(result));
-    } catch (error) {
-      setUserData(`Request failed: ${error.message}`);
-    }
-  };
   const signUpUser = async () => {
     try {
       let result = await api.auth.signUp(email, password);

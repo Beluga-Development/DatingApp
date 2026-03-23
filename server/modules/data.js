@@ -34,11 +34,16 @@ const requireAuth = async (req, res, next) => {
   }
 };
 
-const getAllUserData = async () => {
+//Returns data for logged in user, returns user_data + profile_data { profile_data:{} }
+const getUserData = async (req) => {
   try {
-    const { data, error } = await db.from("user_data").select();
+    const { data, error } = await db
+      .from("user_data")
+      .select(`* , profile_data(*)`)
+      .eq("user_id", req.user.id);
+
     if (error) console.error(error);
-    console.log(data);
+    console.log("Get User Data: ", data);
     return data;
   } catch (err) {
     console.error(err);
@@ -134,8 +139,8 @@ const getAllInterests = async () => {
 };
 
 export {
+  getUserData,
   getAllInterests,
-  getAllUserData,
   signUpUser,
   addUserDataRow,
   loginUser,

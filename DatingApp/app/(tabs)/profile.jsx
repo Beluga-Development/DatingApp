@@ -21,6 +21,15 @@ export default function ProfileScreen() {
     }
   };
 
+  const getUserData = async () => {
+    try {
+      let result = await api.data.getUserData();
+      console.log(result);
+    } catch (error) {
+      console.log(`Request failed: ${error.message}`);
+    }
+  };
+
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <Text>Profile</Text>
@@ -36,6 +45,7 @@ export default function ProfileScreen() {
         {profileData}
       </Text>
       <Button title="Log Out" onPress={handleLogout} />
+      <Button title="GET USER DATA TESTING" onPress={getUserData} />
     </View>
   );
 }
