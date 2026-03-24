@@ -9,6 +9,7 @@ import {
   requireAuth,
   signOutUser,
   signUpUser,
+  getMatchData
 } from "./data.js";
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 
