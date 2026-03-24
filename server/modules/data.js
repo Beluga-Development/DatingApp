@@ -50,6 +50,32 @@ const getUserData = async (req) => {
   }
 };
 
+const getMatchData = async (id) => {
+  try {
+    const { data, error } = await db
+  .from('matches')
+  .select(`
+    user2_profile:profile_data!user2 (
+      id,
+      FirstName,
+      LastName,
+      Gender,
+      Sexuality,
+      Occupation,
+      DateOfBirth,
+      ProfilePicture
+    )
+  `)
+  .eq('user1', id)
+
+    if (error) console.error(error);
+    console.log("Get User Data: ", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 const signUpUser = async (email, passowrd) => {
   try {
     const { data, error } = await db.auth.signUp({
@@ -146,4 +172,5 @@ export {
   loginUser,
   requireAuth,
   signOutUser,
+  getMatchData
 };
