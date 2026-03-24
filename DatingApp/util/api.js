@@ -34,6 +34,23 @@ const data = {
     let payload = await response.json();
     return payload;
   },
+  
+  getMatchData: async (userID) => {
+    const token = await getAccessToken();
+
+    let response = await fetch(serverRoute("match_data/" + userID), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = await response.json();
+    return payload;
+  },
+
   getAllInterests: async () => {
     let response = await fetch(serverRoute("interests"), {
       headers,
