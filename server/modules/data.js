@@ -47,7 +47,7 @@ const getAllUserData = async () => {
 
 const getAllUserProfileData = async (userId) => {
   try {
-    const { data, error } = await 
+    const {data, error} = await
       db.from("user_data")
       .select("id, name, profile_data(*)")
       .eq("id", userId);
@@ -103,7 +103,6 @@ const loginUser = async (email, password) => {
         expires_at: data?.session?.expires_at || null,
         token_type: data?.session?.token_type || null,
       },
-
     };
 
     console.log("SIGN-IN-USER CONSOLE LOG OF DATA", result);
@@ -149,6 +148,18 @@ const addUserDataRow = async (authUserId) => {
   }
 };
 
+const getAllInterests = async () => {
+  try {
+    const {data, error} = await db.from("interests").select();
+    if (error) console.error(error);
+    console.log("GET ALL INTERESTS");
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+
 const saveProfileData = async (profileData, userId) => {
   try {
     // const {data: testUserData, error: testUserError} = await db
@@ -181,6 +192,7 @@ const saveProfileData = async (profileData, userId) => {
 
 
 export {
+  getAllInterests,
   getAllUserData,
   getAllUserProfileData,
   signUpUser,

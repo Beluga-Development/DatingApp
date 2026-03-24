@@ -3,14 +3,15 @@ import express from "express";
 import cors from "cors";
 import {
   addUserDataRow,
+  getAllInterests,
   getAllUserData,
   getAllUserProfileData,
+  getCurrentUser,
   loginUser,
   requireAuth,
+  saveProfileData,
   signOutUser,
   signUpUser,
-  saveProfileData,
-  getCurrentUser,
 } from "./data.js";
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 
@@ -40,6 +41,11 @@ app.get("/helloworld", (req, res) => {
 app.get("/user_data", requireAuth, async (req, res) => {
   let result = await getAllUserData();
   res.json(result);
+});
+
+app.get("/interests", async (req, res) => {
+  let result = await getAllInterests();
+  res.send(result);
 });
 
 app.post("/sign_up", async (req, res) => {
