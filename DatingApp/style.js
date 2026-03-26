@@ -24,7 +24,6 @@ export default StyleSheet.create({
     list: {
         marginTop: 4,
         borderTopWidth: 4,
-        fontFamily: FONT_FAMILY,
         borderBottomWidth: 4,
         marginBottom: 4,
         borderColor: palette.border,
@@ -34,7 +33,6 @@ export default StyleSheet.create({
     app: {
         marginTop: 50,
         backgroundColor: palette.primary,
-        fontFamily: FONT_FAMILY,
         flex: 1
     },
     prompt: {
@@ -66,7 +64,6 @@ export default StyleSheet.create({
         backgroundColor: palette.black,
         padding: 10,
         alignItems: 'center',
-        fontFamily: FONT_FAMILY,
     },
     buttonText: {
         fontSize: 20,
@@ -135,6 +132,23 @@ export default StyleSheet.create({
         padding: 4,
         paddingHorizontal: 25,
         color: palette.text
+    },
+    dropdownOpenContainer: {
+        zIndex: 1,
+        elevation: 1,
+    },
+    dropdownContainer: {
+        position: "relative",
+    },
+    dropdownMenu: {
+        backgroundColor: palette.secondary,
+        borderRadius: 12,
+        paddingVertical: 6,
+        marginHorizontal: 10,
+    },
+    dropdownOption: {
+        paddingVertical: 10,
+        paddingHorizontal: 25,
     },
     profilePicture: {
         width: 160,
