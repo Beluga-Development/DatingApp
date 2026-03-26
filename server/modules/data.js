@@ -190,6 +190,37 @@ const saveProfileData = async (profileData, userId) => {
   }
 };
 
+const saveUserInterests = async (interestIds, userId) => {
+  try {
+    await db.auth.refreshSession();
+    const { data: userData, error: userError } = await db
+        .from("user_data")
+        .select("id")
+        .eq("user_id", userId)
+        .single();
+
+    if (userError) {
+      console.error("ERROR FETCHING USER DATA IN SAVE USER INTERESTS", userError);
+      return;
+    }
+
+    const rows = interestIds.map((id) => ({
+      user_id: userData.id,
+      interest_id: id
+    }));
+
+    const { data, error } = await db
+        .from("user_interest")
+        .insert(rows)
+        .select();
+
+    if (error) console.error(error);
+    console.log("SAVE USER INTERESTS", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 export {
   getAllInterests,
@@ -202,4 +233,5 @@ export {
   requireAuth,
   signOutUser,
   saveProfileData,
+  saveUserInterests,
 };

@@ -10,6 +10,7 @@ import {
   loginUser,
   requireAuth,
   saveProfileData,
+  saveUserInterests,
   signOutUser,
   signUpUser,
 } from "./data.js";
@@ -86,6 +87,14 @@ app.post("/profile_data", requireAuth, async (req, res) => {
     console.log("CURRENT USERID", user?.id);
   let result = await saveProfileData( profileData, userId );
   console.log("RESULT OF SAVE PROFILE DATA", result);
+  res.send(result);
+});
+
+app.post("/user_interests", requireAuth, async (req, res) => {
+  const { interests } = req.body;
+  const user = await getCurrentUser(req.headers.authorization);
+  const userId = user?.id;
+  let result = await saveUserInterests(interests, userId);
   res.send(result);
 });
 

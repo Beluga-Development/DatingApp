@@ -10,7 +10,6 @@ import {
     TouchableOpacity} from "react-native";
 
 //Component Imports
-import { Chip, TouchableRipple } from "react-native-paper";
 import CalenderInput from "./CalenderInput";
 import TitledTextInput from "./TitledTextInput";
 import Button from "./Button";
@@ -23,14 +22,18 @@ import * as api from "../util/api.js";
 import branding, { palette} from "../style.js";
 import ListChipper from "./ListChipper";
 
-const interests = [
-    { id: 1, name: "Hiking" },
-    { id: 2, name: "Travel" },
-    { id: 3, name: "Gaming" },
-    { id: 4, name: "Music" },
-    { id: 5, name: "Cooking" },
-    { id: 6, name: "Fitness" },
-    { id: 7, name: "Reading" },
+const genderOptions = [
+    "Male",
+    "Female",
+    "Non-binary",
+    "Other"
+];
+
+const sexualityOptions = [
+    "Heterosexual",
+    "Bisexual",
+    "Homosexual",
+    "Pansexual",
 ];
 
 function ProfileCreation() {
@@ -46,77 +49,55 @@ function ProfileCreation() {
         dateOfBirth: new Date()
     });
 
-    const [showInterestSearch, setShowInterestSearch] = useState(false);
-    const [interestQuery, setInterestQuery] = useState("");
-
     const [isGenderOpen, setIsGenderOpen] = useState(false);
     const [isSexualityOpen, setIsSexualityOpen] = useState(false);
 
+    const [interests, setInterests] = useState([]);
 
-    const genderOptions = [
-        "Male",
-        "Female",
-        "Non-binary",
-        "Other"
-    ];
-
-    const sexualityOptions = [
-        "Heterosexual",
-        "Bisexual",
-        "Homosexual",
-        "Pansexual",
-    ];
-
-    const filteredInterests = interests.filter((option) => {
-        const notSelected = !profile.interests.some((i) => i.id === option.id);
-        const matchesQuery = option.name.toLowerCase().includes(interestQuery.trim().toLowerCase());
-        return notSelected && matchesQuery;
-    });
-
-    const addInterest = (item) => {
-        setProfile((prev) => ({ ...prev, interests: [...prev.interests, item] }));
-        setInterestQuery("");
-        setShowInterestSearch(false);
-    };
-
-    const removeInterest = (item) => {
-        setProfile((prev) => ({...prev, interests: prev.interests.filter((i) => i.id !== item.id),}));
-    };
+    useEffect(() => {api.data.getAllInterests().then((data) => setInterests(data)).catch((err) => console.error("Failed to load interests:", err));}, []);
 
     const setFirstName = (firstName) => {
-        setProfile({...profile, firstName});
+        setProfile((prev) => ({...prev, firstName}));
     };
 
     const setLastName = (lastName) => {
-        setProfile({...profile, lastName});
+        setProfile((prev) => ({...prev, lastName}));
     };
 
     const setGender = (gender) => {
-        setProfile({...profile, gender});
+        setProfile((prev) => ({...prev, gender}));
     };
 
     const setSexuality = (sexuality) => {
-        setProfile({...profile, sexuality});
+        setProfile((prev) => ({...prev, sexuality}));
     };
 
     const setOccupation = (occupation) => {
-        setProfile({...profile, occupation});
+        setProfile((prev) => ({...prev, occupation}));
     };
 
     const setDateOfBirth = (dateOfBirth) => {
-        setProfile({...profile, dateOfBirth});
+        setProfile((prev) => ({...prev, dateOfBirth}));
     };
+
+
     //EndOf State Variables for the profile creation form
     //Function to handle profile creation
     const createProfile = async () => {
         try{
             let result = await api.data.saveProfileData({
-            FirstName: profile.firstName,
-            LastName: profile.lastName,
-            Gender: profile.gender,
-            Sexuality: profile.sexuality,
-            DateOfBirth: profile.dateOfBirth
+                FirstName: profile.firstName,
+                LastName: profile.lastName,
+                Gender: profile.gender,
+                Sexuality: profile.sexuality,
+                Occupation: profile.occupation,
+                DateOfBirth: profile.dateOfBirth
             });
+
+            if (profile.interests.length > 0) {
+                await api.data.saveUserInterests(profile.interests.map((i) => i.id));
+            }
+
             console.log("RESULT OF SAVE PROFILE DATA", result);
             alert("Profile Created!");
         } catch(error){
@@ -144,22 +125,42 @@ function ProfileCreation() {
                 >
                     <View style={{flexDirection: 'column', marginHorizontal: 10,}}>
 
-                        <View id={'ProfilePicture'} style={{marginBottom: 50,marginTop: 15, alignItems: 'center'}}>
-                            <Image
-                                   style={branding.profilePicture}
-                            />
+                        <View id={'ProfilePicture'} style={{marginBottom: 50, marginTop: 15, alignItems: 'center'}}>
+                            <View style={{width: 160, height: 160}}>
+                                <Image style={branding.profilePicture} />
+                                <TouchableOpacity
+                                    style={{
+                                        position: 'absolute',
+                                        bottom: -15,
+                                        alignSelf: 'center',
+                                        backgroundColor: palette.black,
+                                        width: 30,
+                                        height: 30,
+                                        borderRadius: 15,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                    onPress={() => {
+
+                                    }}
+                                >
+                                    <Text style={{color: '#fff', fontSize: 20, lineHeight: 22, fontWeight: 'bold'}}>+</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
 
                         <View id={'FullNameView'} style={{flexDirection: 'row'}}>
                             <TitledTextInput title={"First Name"}
                                              value={profile.firstName}
                                              onChangeText={setFirstName}
+                                             editable={!isGenderOpen && !isSexualityOpen}
                                              style={{width: "50%"}}
                             />
 
                             <TitledTextInput title={"Last Name"}
                                              value={profile.lastName}
                                              onChangeText={setLastName}
+                                             editable={!isGenderOpen && !isSexualityOpen}
                                              style={{width: "50%"}}
                             />
                         </View>
@@ -198,6 +199,7 @@ function ProfileCreation() {
                         <TitledTextInput title={"Occupation"}
                                          value={profile.occupation}
                                          onChangeText={setOccupation}
+                                         editable={!isGenderOpen && !isSexualityOpen}
                                          style={{width: "100%"}}
                         />
 

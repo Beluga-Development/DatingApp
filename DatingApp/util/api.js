@@ -98,6 +98,21 @@ const data = {
     return payload;
   },
 
+  saveUserInterests: async (interestIds) => {
+    let token = await getAccessToken();
+    let response = await fetch(serverRoute("user_interests"), {
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      method: "POST",
+      body: JSON.stringify({ interests: interestIds }),
+    });
+    let payload = await response.json();
+    return payload;
+  },
+
 };
 
 const auth = {
