@@ -1,6 +1,13 @@
 //React & Native Imports
-import {useState} from "react";
-import {Image, Text, View, Pressable, TextInput, FlatList, ScrollView, KeyboardAvoidingView, Platform} from "react-native";
+import { useState, useEffect } from "react";
+import {
+    Image,
+    Text,
+    View,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform,
+    TouchableOpacity} from "react-native";
 
 //Component Imports
 import { Chip, TouchableRipple } from "react-native-paper";
@@ -14,6 +21,7 @@ import * as api from "../util/api.js";
 
 //Style Imports
 import branding, { palette} from "../style.js";
+import ListChipper from "./ListChipper";
 
 const interests = [
     { id: 1, name: "Hiking" },
@@ -194,91 +202,13 @@ function ProfileCreation() {
                         />
 
                         <View id={"InterestView"} >
-                            <Text style={branding.inputTextTitle}>Interests</Text>
-
-                            <View id={"InterestChips"} style={{flexDirection: "row", flexWrap: "wrap", marginHorizontal: 10}}>
-                                {profile.interests.map((item) => (
-                                    <Chip
-                                        key={item.id}
-                                        onClose={() => removeInterest(item)}
-                                        style={{
-                                            marginRight: 8,
-                                            marginBottom: 8,
-                                            borderRadius: 36,
-                                            backgroundColor: palette.primary,
-                                        }}
-                                        textStyle={{color: palette.text}}
-                                    >
-                                        {item.name}
-                                    </Chip>
-                                ))}
-                            </View>
-
-                            {!showInterestSearch ? (
-                                <TouchableRipple id={"AddInterest"}
-                                    onPress={() => setShowInterestSearch(true)}
-                                    style={{
-                                        marginLeft: 12,
-                                        width: 35,
-                                        height: 35,
-                                        borderRadius: 36,
-                                        backgroundColor: palette.black,
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                    }}
-                                >
-                                    <Text style={{ color: palette.white, fontSize: 36, lineHeight: 30 }}>+</Text>
-                                </TouchableRipple>
-                            ) : (
-                                <View id={"InterestSearchBar"} style={{ marginHorizontal: 10, marginTop: 8 }}>
-                                    <TextInput
-                                        value={interestQuery}
-                                        onChangeText={setInterestQuery}
-                                        placeholder="Search interests"
-                                        mode="outlined"
-                                        autoFocus
-                                        style={{
-                                            paddingHorizontal: 15,
-                                            borderRadius: 36,
-                                            backgroundColor: palette.accent,
-                                        }}
-                                    ></TextInput>
-                                    <Pressable
-                                        onPress={() => {
-                                            setInterestQuery("");
-                                            setShowInterestSearch(false);
-                                        }}
-                                        style={{
-                                            marginBottom: 8,
-                                            marginLeft: 15
-                                        }}
-                                    >
-                                        <Text style={{ color: palette.contrast}}>Cancel</Text>
-                                    </Pressable>
-
-                                    <FlatList id={"InterestList"}
-                                        data={filteredInterests.slice(0, 5)}
-                                        keyExtractor={(item) => String(item.id)}
-                                        keyboardShouldPersistTaps="handled"
-                                        scrollEnabled={false}
-                                        renderItem={({item}) => (
-                                            <TouchableRipple
-                                                onPress={() => addInterest(item)}
-                                                style={{
-                                                    backgroundColor: palette.secondary,
-                                                    paddingVertical: 6,
-                                                    paddingHorizontal: 8,
-                                                    borderRadius: 36,
-                                                    marginBottom: 6,
-                                                    alignSelf: "flex-start"
-                                                }}
-                                            >
-                                                <Text>{item.name}</Text>
-                                            </TouchableRipple>
-                                        )}
-                                    />
-                                </View>
-                            )}
+                            <ListChipper
+                                title="Interests"
+                                items={profile.interests}
+                                options={interests}
+                                onAdd={(item) => setProfile((prev) => ({ ...prev, interests: [...prev.interests, item] }))}
+                                onRemove={(item) => setProfile((prev) => ({ ...prev, interests: prev.interests.filter((i) => i.id !== item.id) }))}
+                            />
                         </View>
                         {/* PlaceHolder Create Profile Button*/}
                         <Button text={"Create Profile"} onPress={createProfile} style={{justifyContent: "flex-end"}}></Button>
