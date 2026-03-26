@@ -1,65 +1,122 @@
-import { useEffect, useState } from "react";
-import { Button, Text, TextInput, View } from "react-native";
+import { useState } from "react";
+import { View, Text, TextInput, Pressable, StatusBar, ActivityIndicator } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as api from "../util/api.js";
+import styles, { palette } from "../style.js";
 
 function Login({ setIsLoggedIn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
+  const [isError, setIsError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const signUpUser = async () => {
+    if (!email || !password) {
+      setIsError(true);
+      setConfirmation("Please enter an email and password.");
+      return;
+    }
+    setLoading(true);
+    setConfirmation("");
+    setIsError(false);
     try {
       let result = await api.auth.signUp(email, password);
+      setIsError(false);
       setConfirmation(result.message);
     } catch (error) {
-      setConfirmation(`Request failed: ${error.message}`);
+      setIsError(true);
+      setConfirmation(`Sign up failed: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   const loginUser = async () => {
+    if (!email || !password) {
+      setIsError(true);
+      setConfirmation("Please enter an email and password.");
+      return;
+    }
+    setLoading(true);
+    setConfirmation("");
+    setIsError(false);
     try {
       let result = await api.auth.loginUser(email, password);
+      setIsError(false);
       setConfirmation(result.message);
       setIsLoggedIn(Boolean(result?.session?.access_token));
     } catch (error) {
-      setConfirmation(`Request failed: ${error.message}`);
+      setIsError(true);
+      setConfirmation(`Login failed: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <>
-      <Text>
-        Login and sign up. After sign up you have to click authorization link in
-        email sent to the sign up email. If you spam multiple sign ups it will
-        block you and you will have to wait
-      </Text>
-      <View
-        style={{
-          padding: 20,
-          backgroundColor: "#bbbbbb",
-          borderRadius: 12,
-        }}
-      >
-        <Text style={{ margin: "auto" }}>Login or Sign up</Text>
+    <SafeAreaView style={styles.loginSafeArea} edges={["top", "bottom"]}>
+      <StatusBar />
+      <View style={styles.loginContainer}>
+        <Text style={styles.loginAppName}>LookingForLove</Text>
+        <Text style={styles.loginSubheading}>
+          Enter your email to login or sign up for this app
+        </Text>
         <TextInput
+          style={styles.loginInput}
+          placeholder="email@email.com"
+          placeholderTextColor={palette.border}
+          keyboardType="email-address"
+          autoCapitalize="none"
           textContentType="emailAddress"
-          style={{ borderWidth: 1 }}
           value={email}
-          placeholder="Enter your email"
           onChangeText={setEmail}
+          editable={!loading}
         />
         <TextInput
+          style={styles.loginInput}
+          placeholder="password"
+          placeholderTextColor={palette.border}
+          secureTextEntry={true}
+          autoCapitalize="none"
           textContentType="password"
-          style={{ borderWidth: 1 }}
-          placeholder="Enter your password"
           value={password}
           onChangeText={setPassword}
+          editable={!loading}
         />
-        <Button title="Login" onPress={loginUser} />
-        <Button title="Sign Up" onPress={signUpUser} />
-        <Text>{confirmation}</Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.loginContinueBtn,
+            pressed && styles.loginBtnPressed,
+            loading && { opacity: 0.6 },
+          ]}
+          onPress={loginUser}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.loginContinueBtnText}>Login</Text>
+          )}
+        </Pressable>
+        <Pressable onPress={signUpUser} disabled={loading}>
+          <Text style={[styles.signUpButton, loading && { opacity: 0.6 }]}>
+            Sign Up
+          </Text>
+        </Pressable>
+        {confirmation ? (
+          <Text
+            style={[
+              styles.loginConfirmation,
+              { color: isError ? "#e05555" : palette.text },
+            ]}
+          >
+            {confirmation}
+          </Text>
+        ) : null}
       </View>
-    </>
+    </SafeAreaView>
   );
 }
+
 export default Login;
