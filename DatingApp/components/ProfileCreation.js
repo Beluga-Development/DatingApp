@@ -52,6 +52,7 @@ function ProfileCreation() {
         sexuality: "",
         occupation: "",
         interests: [],
+        profilePicture: null,
         dateOfBirth: new Date()
     });
 
