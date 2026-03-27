@@ -7,7 +7,11 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Platform,
-    TouchableOpacity} from "react-native";
+    TouchableOpacity,
+    Pressable,
+    Modal,
+} from "react-native";
+import * as ImagePicker from "expo-image-picker";
 
 //Component Imports
 import CalenderInput from "./CalenderInput";
@@ -37,6 +41,8 @@ const sexualityOptions = [
 ];
 
 function ProfileCreation() {
+
+    const [showPfpModal, setShowPfpModal] = useState(false);
 
     //State Variables for the profile creation form
     const [profile, setProfile] = useState({
@@ -80,6 +86,36 @@ function ProfileCreation() {
         setProfile((prev) => ({...prev, dateOfBirth}));
     };
 
+    const launchCamera = async () => {
+        setShowPfpModal(false);
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== "granted") {
+            alert("Camera permission is required");
+            return;
+        }
+        const result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.8,
+        });
+        if (!result.canceled) {
+            setProfile((prev) => ({...prev, profilePicture: result.assets[0].uri}));
+        }
+    };
+
+    const launchLibrary = async () => {
+        setShowPfpModal(false);
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.8,
+        });
+        if (!result.canceled) {
+            setProfile((prev) => ({...prev, profilePicture: result.assets[0].uri}));
+        }
+    };
+
 
     //EndOf State Variables for the profile creation form
     //Function to handle profile creation
@@ -118,6 +154,73 @@ function ProfileCreation() {
                         Create Profile
                     </Text>
                 </View>
+                <Modal
+                    visible={showPfpModal}
+                    transparent={true}
+                    animationType="fade"
+                    onRequestClose={() => setShowPfpModal(false)}
+                >
+                    <Pressable
+                        style={{
+                            flex: 1,
+                            backgroundColor: "rgba(0,0,0,0.5)",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                        onPress={() => setShowPfpModal(false)}
+                    >
+                        <View style={{
+                            backgroundColor: palette.white,
+                            borderRadius: 16,
+                            padding: 24,
+                            width: "75%",
+                            alignItems: "center",
+                        }}>
+                            <Text style={{
+                                fontSize: 18,
+                                fontWeight: "bold",
+                                marginBottom: 20,
+                                color: palette.text,
+                            }}>
+                                Profile Picture
+                            </Text>
+
+                            <TouchableOpacity
+                                onPress={launchCamera}
+                                style={{
+                                    backgroundColor: palette.black,
+                                    borderRadius: 12,
+                                    paddingVertical: 12,
+                                    paddingHorizontal: 24,
+                                    width: "100%",
+                                    alignItems: "center",
+                                    marginBottom: 12,
+                                }}
+                            >
+                                <Text style={{ color: palette.white, fontSize: 16 }}>Take Photo</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={launchLibrary}
+                                style={{
+                                    backgroundColor: palette.black,
+                                    borderRadius: 12,
+                                    paddingVertical: 12,
+                                    paddingHorizontal: 24,
+                                    width: "100%",
+                                    alignItems: "center",
+                                    marginBottom: 12,
+                                }}
+                            >
+                                <Text style={{ color: palette.white, fontSize: 16 }}>Choose from Library</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity onPress={() => setShowPfpModal(false)}>
+                                <Text style={{ color: palette.contrast, fontSize: 14 }}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </Pressable>
+                </Modal>
                 <ScrollView
                     style={{ flex: 1 }}
                     contentContainerStyle={{ padding: 16, paddingBottom: 20 }}
@@ -126,27 +229,25 @@ function ProfileCreation() {
                     <View style={{flexDirection: 'column', marginHorizontal: 10,}}>
 
                         <View id={'ProfilePicture'} style={{marginBottom: 50, marginTop: 15, alignItems: 'center'}}>
-                            <View style={{width: 160, height: 160}}>
-                                <Image style={branding.profilePicture} />
-                                <TouchableOpacity
-                                    style={{
-                                        position: 'absolute',
-                                        bottom: -15,
-                                        alignSelf: 'center',
+                            <TouchableOpacity
+                                style={{width: 160, height: 160}}
+                                onPress={() => setShowPfpModal(true)}
+                            >
+                                {profile.profilePicture ? (
+                                    <Image
+                                        source={{ uri: profile.profilePicture }}
+                                        style={branding.profilePicture}
+                                    />
+                                ) : (
+                                    <View style={[branding.profilePicture, {
                                         backgroundColor: palette.black,
-                                        width: 30,
-                                        height: 30,
-                                        borderRadius: 15,
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                    }}
-                                    onPress={() => {
-
-                                    }}
-                                >
-                                    <Text style={{color: '#fff', fontSize: 20, lineHeight: 22, fontWeight: 'bold'}}>+</Text>
-                                </TouchableOpacity>
-                            </View>
+                                    }]}>
+                                        <Text style={{ color: '#fff', fontSize: 150, fontWeight: 'bold', lineHeight: 155, textAlign: 'center' }}>+</Text>
+                                    </View>
+                                )}
+                            </TouchableOpacity>
                         </View>
 
                         <View id={'FullNameView'} style={{flexDirection: 'row'}}>
