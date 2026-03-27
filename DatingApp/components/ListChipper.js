@@ -80,27 +80,6 @@ function ListChipper({
                 </TouchableRipple>
             ) : (
                 <View style={[{ marginHorizontal: 10, marginTop: 8 }, searchContainerStyle]}>
-                    <TextInput
-                        value={query}
-                        onChangeText={setQuery}
-                        placeholder="Search interests"
-                        autoFocus
-                        style={[{
-                            paddingHorizontal: 15,
-                            borderRadius: 36,
-                            backgroundColor: palette.accent,
-                        }, searchInputStyle]}
-                    />
-                    <Pressable
-                        onPress={() => {
-                            setQuery("");
-                            setShowSearch(false);
-                        }}
-                        style={[{ marginBottom: 8, marginLeft: 15 }, cancelStyle]}
-                    >
-                        <Text style={{ color: palette.contrast }}>Cancel</Text>
-                    </Pressable>
-
                     <FlatList
                         data={filteredOptions.slice(0, maxVisible)}
                         keyExtractor={(item) => String(item.id)}
@@ -122,6 +101,27 @@ function ListChipper({
                             </TouchableRipple>
                         )}
                     />
+
+                    <TextInput
+                        value={query}
+                        onChangeText={setQuery}
+                        placeholder="Search interests"
+                        autoFocus
+                        style={[{
+                            paddingHorizontal: 15,
+                            borderRadius: 36,
+                            backgroundColor: palette.accent,
+                        }, searchInputStyle]}
+                    />
+                    <Pressable
+                        onPress={() => {
+                            setQuery("");
+                            setShowSearch(false);
+                        }}
+                        style={[{ marginBottom: 8, marginLeft: 15 }, cancelStyle]}
+                    >
+                        <Text style={{ color: palette.contrast }}>Cancel</Text>
+                    </Pressable>
                 </View>
             )}
         </View>
