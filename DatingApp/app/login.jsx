@@ -15,6 +15,7 @@ export default function LoginScreen() {
     setIsLoggedIn(isLoggedIn);
     if (isLoggedIn) {
       setIsProfileComplete(isProfileComplete);
+      //console.log("Profile complete:", isProfileComplete);
       if(isProfileComplete){
         router.replace("/(tabs)");
       } else {

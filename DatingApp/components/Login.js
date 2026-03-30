@@ -19,10 +19,14 @@ function Login({ setIsLoggedIn, setIsProfileComplete }) {
   const loginUser = async () => {
     try {
       let result = await api.auth.loginUser(email, password);
+      //console.log("Login result:", result);
       setConfirmation(result.message);
       setIsLoggedIn(Boolean(result?.session?.access_token));
       if(result?.session?.access_token){
-        let profileData = await api.data.getProfileData(result.session.user.id);
+        //console.log("PRE PROFILE DATA FETCH");
+        //BELOW DOES NOT GET CALLED
+        let profileData = await api.data.getCurrentProfileData();
+        //console.log("Profile data:", profileData);
         setIsProfileComplete(Boolean(profileData?.profile_data));
       }
     } catch (error) {

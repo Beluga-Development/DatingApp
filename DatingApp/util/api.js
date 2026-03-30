@@ -63,16 +63,15 @@ const data = {
     return payload;
   },
 
-  getProfileData: async (userId) => {
+  getCurrentProfileData: async () => {
     let token = await getAccessToken();
-    let response = await fetch(serverRoute("profile_data"), {
+    let response = await fetch(serverRoute("current_profile_data"), {
       headers: {
         Accept: "*/*",
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       method: "GET",
-      body: JSON.stringify({ id: userId }),
     });
     let payload = await response.json();
     console.log("profile data payload:", payload);

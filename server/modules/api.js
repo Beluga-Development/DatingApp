@@ -73,20 +73,39 @@ app.post("/logout", requireAuth, async (req, res) => {
   res.send({ message: "Logged out" });
 });
 
+app.get("/current_profile_data", requireAuth, async (req, res) => {
+  //needs to get auth from the req
+  //req.authorization;
+  console.log(req);
+  let userId = req.body.id;
+  if(!userId){
+      const user = await getCurrentUser(req.headers.authorization);
+      userId = user.id;
+      console.log("USER ID IN PROFILE DATA ENDPOINT", userId);
+  }
+  let result = await getUserProfileData(userId);
+  res.send(result);
+});
+
 app.get("/profile_data", requireAuth, async (req, res) => {
-  const userId = req.body.id;
-  let result = await getAllUserProfileData(userId);
+  let userId = req.body.id;
+  if(!userId){
+    const user = await getCurrentUser(req.headers.authorization);
+    userId = user.id;
+    //console.log("USER ID IN PROFILE DATA ENDPOINT", userId);
+  }
+  let result = await getUserProfileData(userId);
   res.send(result);
 });
 
 app.post("/profile_data", requireAuth, async (req, res) => {
   const profileData = req.body;
   const user = await getCurrentUser(req.headers.authorization);
-  console.log("CURRENT USER", user);
+  //console.log("CURRENT USER", user);
   const userId = user?.id;
-    console.log("CURRENT USERID", user?.id);
+  //console.log("CURRENT USERID", user?.id);
   let result = await saveProfileData( profileData, userId );
-  console.log("RESULT OF SAVE PROFILE DATA", result);
+  //console.log("RESULT OF SAVE PROFILE DATA", result);
   res.send(result);
 });
 

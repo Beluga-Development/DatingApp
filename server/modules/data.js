@@ -38,21 +38,23 @@ const getAllUserData = async () => {
   try {
     const { data, error } = await db.from("user_data").select();
     if (error) console.error(error);
-    console.log(data);
+    //console.log(data);
     return data;
   } catch (err) {
     console.error(err);
   }
 };
 
-const getAllUserProfileData = async (userId) => {
+const getUserProfileData = async () => {
   try {
+    let userId = await getCurrentUser().id;
+    //console.log("USER ID IN GET ALL USER PROFILE DATA", userId);
     const {data, error} = await
       db.from("user_data")
       .select("id, name, profile_data(*)")
       .eq("id", userId);
     if (error) console.error(error);
-    console.log("CONSOLE LOG OF PROFILE DATA", data);
+    //console.log("CONSOLE LOG OF PROFILE DATA", data);
     return data;
   } catch (err) {
     console.error(err);
@@ -66,7 +68,7 @@ const signUpUser = async (email, passowrd) => {
       password: passowrd,
     });
     if (error) console.error(error);
-    console.log("SIGNUPUSER CONSOLE LOG OF DATA", data);
+    //console.log("SIGNUPUSER CONSOLE LOG OF DATA", data);
     return data;
   } catch (err) {
     console.error(err);
@@ -105,7 +107,7 @@ const loginUser = async (email, password) => {
       },
     };
 
-    console.log("SIGN-IN-USER CONSOLE LOG OF DATA", result);
+    //console.log("SIGN-IN-USER CONSOLE LOG OF DATA", result);
     return result;
   } catch (error) {
     console.error("LOGIN-USER ERROR", error);
@@ -141,7 +143,7 @@ const addUserDataRow = async (authUserId) => {
       .insert({ user_id: authUserId })
       .select();
     if (error) console.error(error);
-    console.log("ADD USER DATA ROW DATA", data);
+    //console.log("ADD USER DATA ROW DATA", data);
     return data;
   } catch (err) {
     console.error(err);
@@ -172,7 +174,7 @@ const saveProfileData = async (profileData, userId) => {
     .select("*")
     .eq('user_id', userId)
     .single();
-    console.log("USER DATA IN SAVE PROFILE DATA", userData);
+    //console.log("USER DATA IN SAVE PROFILE DATA", userData);
     if (userError) {
       console.error("ERROR FETCHING USER DATA IN SAVE PROFILE DATA", userError);
       return;
@@ -183,7 +185,7 @@ const saveProfileData = async (profileData, userId) => {
       .insert({...profileData})
       .select();
     if (error) console.error(error);
-    console.log("SAVE PROFILE DATA", data);
+    //console.log("SAVE PROFILE DATA", data);
     return data;
   } catch (err) {
     console.error(err);
@@ -225,7 +227,7 @@ const saveUserInterests = async (interestIds, userId) => {
 export {
   getAllInterests,
   getAllUserData,
-  getAllUserProfileData,
+  getUserProfileData,
   signUpUser,
   getCurrentUser,
   addUserDataRow,
