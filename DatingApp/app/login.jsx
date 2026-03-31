@@ -8,29 +8,45 @@ import { Text } from "react-native";
 
 export default function LoginScreen() {
   const [loading, setLoading] = useState(true);
-  const { setIsLoggedIn } = useContext(SessionContext);
-  const { setIsProfileComplete } = useContext(SessionContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(SessionContext);
+  const { isProfileComplete, setIsProfileComplete } = useContext(SessionContext);
 
-  const handleSetIsLoggedIn = (isLoggedIn, isProfileComplete) => {
-    setIsLoggedIn(isLoggedIn);
-    if (isLoggedIn) {
-      setIsProfileComplete(isProfileComplete);
-      //console.log("Profile complete:", isProfileComplete);
-      if(isProfileComplete){
-        router.replace("/(tabs)");
-      } else {
-        router.replace("/profile_creation");
-      }
+const handleSetIsLoggedIn = (loggedIn) => {
+  setIsLoggedIn(loggedIn);
+};
+
+useEffect(() => {
+  const checkIfAlreadyLoggedIn = async () => {
+    const token = await api.getAccessToken();
+    setIsLoggedIn(!!token);
+    
+    if (!token) {
+      setLoading(false); // stop loading if not logged in
     }
+  };
+
+  checkIfAlreadyLoggedIn();
+}, []);
+
+useEffect(() => {
+  if (!isLoggedIn) return;
+
+  const fetchProfile = async () => {
+    const profileComplete = Boolean(await api.data.getCurrentProfileData());
+    setIsProfileComplete(profileComplete);
     setLoading(false);
   };
-  useEffect(() => {
-    const checkIfAlreadyLoggedIn = async () => {
-      setLoading(true);
-      handleSetIsLoggedIn(await api.getAccessToken());
-    };
-    checkIfAlreadyLoggedIn();
-  });
+
+  fetchProfile();
+}, [isLoggedIn]);
+
+useEffect(() => {
+  if (!loading && isLoggedIn) {
+    router.replace(
+      isProfileComplete ? "/(tabs)" : "/profile_creation"
+    );
+  }
+}, [loading, isLoggedIn, isProfileComplete]);
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 16 }}>
@@ -39,7 +55,10 @@ export default function LoginScreen() {
           Loading
         </Text>
       ) : (
-        <Login setIsLoggedIn={handleSetIsLoggedIn} />
+        <Login
+          setIsLoggedIn={handleSetIsLoggedIn}
+          setIsProfileComplete={setIsProfileComplete}
+        />
       )}
     </SafeAreaView>
   );

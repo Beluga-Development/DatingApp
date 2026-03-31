@@ -45,16 +45,14 @@ const getAllUserData = async () => {
   }
 };
 
-const getUserProfileData = async () => {
+const getUserProfileData = async (userId) => {
   try {
-    let userId = await getCurrentUser().id;
-    //console.log("USER ID IN GET ALL USER PROFILE DATA", userId);
     const {data, error} = await
       db.from("user_data")
-      .select("id, name, profile_data(*)")
-      .eq("id", userId);
+      .select("user_id, name, profile_data(*)")
+      .eq("user_id", userId).single();
     if (error) console.error(error);
-    //console.log("CONSOLE LOG OF PROFILE DATA", data);
+    console.log("CONSOLE LOG OF PROFILE DATA", data);
     return data;
   } catch (err) {
     console.error(err);

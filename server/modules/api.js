@@ -5,7 +5,7 @@ import {
   addUserDataRow,
   getAllInterests,
   getAllUserData,
-  getAllUserProfileData,
+  getUserProfileData,
   getCurrentUser,
   loginUser,
   requireAuth,
@@ -75,15 +75,10 @@ app.post("/logout", requireAuth, async (req, res) => {
 
 app.get("/current_profile_data", requireAuth, async (req, res) => {
   //needs to get auth from the req
-  //req.authorization;
-  console.log(req);
-  let userId = req.body.id;
-  if(!userId){
-      const user = await getCurrentUser(req.headers.authorization);
-      userId = user.id;
-      console.log("USER ID IN PROFILE DATA ENDPOINT", userId);
-  }
-  let result = await getUserProfileData(userId);
+  // const user = await getCurrentUser(req.headers.authorization);
+  // let userId = user.id;
+  // console.log("USER ID IN PROFILE DATA ENDPOINT", userId);
+  let result = await getUserProfileData(req.user.id);
   res.send(result);
 });
 
