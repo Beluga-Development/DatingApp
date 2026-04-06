@@ -1,6 +1,5 @@
 import { Platform } from "react-native";
 import { deleteValue, getValueFor, save } from "./keyStorage";
-import { getContactData } from "../../server/modules/data";
 
 const API_IP =
   Platform.OS === "android" ? "http://10.0.2.2" : "http://localhost";
@@ -35,11 +34,11 @@ const data = {
     let payload = await response.json();
     return payload;
   },
-  
-  getMatchData: async (userID) => {
+
+  getMatchData: async () => {
     const token = await getAccessToken();
 
-    let response = await fetch(serverRoute("match_data/" + userID), {
+    let response = await fetch(serverRoute("match_data"), {
       method: "POST",
       headers: {
         Accept: "*/*",
@@ -68,14 +67,17 @@ const data = {
 
   addMatch: async (userA, userB) => {
     const token = await getAccessToken();
-    let response = await fetch(serverRoute("add_match/" + userA + "/" + userB), {
-      method: "POST",
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    let response = await fetch(
+      serverRoute("add_match/" + userA + "/" + userB),
+      {
+        method: "POST",
+        headers: {
+          Accept: "*/*",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     let payload = await response.json();
     return payload;
@@ -83,14 +85,17 @@ const data = {
 
   addContact: async (user, type, info) => {
     const token = await getAccessToken();
-    let response = await fetch(serverRoute("add_contact/" + user + "/" + type + "/" + info), {
-      method: "POST",
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    let response = await fetch(
+      serverRoute("add_contact/" + user + "/" + type + "/" + info),
+      {
+        method: "POST",
+        headers: {
+          Accept: "*/*",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     let payload = await response.json();
     return payload;
