@@ -60,6 +60,7 @@ app.post("/user_data", requireAuth, async (req, res) => {
 
 app.post("/match_data/:id", requireAuth, async (req, res) => {
   const field_key = req.params.id;
+  console.log("Field-kEY", field_key);
   let result = await getMatchData(field_key);
   res.send(result);
 });
