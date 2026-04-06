@@ -15,13 +15,22 @@ export default function MatchesScreen() {
     const getNonPaidMembers = async () => {
       try {
         let result = await api.data.getNonPaidMembers();
-        console.log("Paid members count", result);
+        console.log("non members count", result);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    const getMatchesThatContacted = async () => {
+      try {
+        let result = await api.data.getMatchesThatContacted();
+        console.log("Matches that Contacted", result);
       } catch (err) {
         console.error(err);
       }
     };
     getPaidMembers();
     getNonPaidMembers();
+    getMatchesThatContacted();
   });
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>

@@ -90,6 +90,21 @@ const data = {
     let payload = response.json();
     return payload;
   },
+  getMatchesThatContacted: async () => {
+    const token = await getAccessToken();
+
+    let response = await fetch(serverRoute("get_matches_contacted"), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = response.json();
+    return payload;
+  },
 };
 
 const auth = {

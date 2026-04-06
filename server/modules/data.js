@@ -168,7 +168,23 @@ const getNonPaidMembers = async (req) => {
   }
 };
 
+const getMatchesThatContacted = async (req) => {
+  try {
+    const { count, error } = await db
+      .from("matches")
+      .select("*", { count: "exact" })
+      .eq("didContact", true);
+
+    if (error) console.error(error);
+    console.log("DID CONTACT MATCHES", count);
+    return count;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export {
+  getMatchesThatContacted,
   getNonPaidMembers,
   getPaidMembers,
   getUserData,

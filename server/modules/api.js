@@ -11,6 +11,7 @@ import {
   signUpUser,
   getPaidMembers,
   getNonPaidMembers,
+  getMatchesThatContacted,
 } from "./data.js";
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 
@@ -78,6 +79,11 @@ app.post("/get_paid_members", requireAuth, async (req, res) => {
 
 app.post("/get_non_paid_members", requireAuth, async (req, res) => {
   let result = await getNonPaidMembers(req);
+  res.send(result);
+});
+
+app.post("/get_matches_contacted", requireAuth, async (req, res) => {
+  let result = await getMatchesThatContacted(req);
   res.send(result);
 });
 
