@@ -65,6 +65,14 @@ app.post("/match_data/:id", requireAuth, async (req, res) => {
   res.send(result);
 });
 
+app.post("/add_match/:idA/:idB", requireAuth, async (req, res) => {
+  const field_key1 = req.params.idA;
+  const field_key2 = req.params.idB;
+  console.log("Field-kEY", field_key1);
+  let result = await addMatch(field_key1, field_key2);
+  res.send(result);
+});
+
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   let result = await loginUser(email, password);

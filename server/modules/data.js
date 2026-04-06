@@ -76,6 +76,23 @@ const getMatchData = async (id) => {
   }
 };
 
+const addMatch = async (idA, idB) => {
+  try {
+    const { data, error } = await db
+  .from('matches')
+  .insert([
+    { userA: idA, userB: idB },
+    { userA: idB, userB: idA }
+  ])
+  
+    if (error) console.error(error);
+    console.log("Get User Data: ", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 const signUpUser = async (email, passowrd) => {
   try {
     const { data, error } = await db.auth.signUp({
@@ -172,5 +189,6 @@ export {
   loginUser,
   requireAuth,
   signOutUser,
-  getMatchData
+  getMatchData,
+  addMatch
 };

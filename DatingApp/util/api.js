@@ -64,6 +64,23 @@ const data = {
     let payload = await response.json();
     return payload;
   },
+
+  addMatch: async (userA, UserB) => {
+    const token = await getAccessToken();
+
+    let response = await fetch(serverRoute("add_match/" + userA + "/" + userB), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = await response.json();
+    return payload;
+  },
+
   getHelloWorld: async () => {
     let response = await fetch(serverRoute("helloworld"), {
       headers,
