@@ -9,6 +9,9 @@ import {
   requireAuth,
   signOutUser,
   signUpUser,
+  getPaidMembers,
+  getNonPaidMembers,
+  getMatchesThatContacted,
 } from "./data.js";
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 
@@ -67,6 +70,21 @@ app.post("/logout", requireAuth, async (req, res) => {
   const token = req.accessToken;
   await signOutUser(token);
   res.send({ message: "Logged out" });
+});
+
+app.post("/get_paid_members", requireAuth, async (req, res) => {
+  let result = await getPaidMembers(req);
+  res.send(result);
+});
+
+app.post("/get_non_paid_members", requireAuth, async (req, res) => {
+  let result = await getNonPaidMembers(req);
+  res.send(result);
+});
+
+app.post("/get_matches_contacted", requireAuth, async (req, res) => {
+  let result = await getMatchesThatContacted(req);
+  res.send(result);
 });
 
 // Start the server listening on PORT, then call the callback (second argument)
