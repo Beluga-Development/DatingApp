@@ -1,7 +1,8 @@
 import { Text, View } from "react-native";
-import { useState, useEffect, Paper, CardContent } from "react";
+import { useState, useEffect } from "react";
 import * as api from "../../util/api.js";
 import Button from "../../components/Button"
+import Modal from "../../components/Modal"
 
 
 const getId = async () =>
@@ -27,7 +28,22 @@ const getMatchData = async (id) => {
     }
   };
 
- 
+  const getPercent = async () => {
+    return null; //needs path and logic to do stuff 
+
+    //UI bar percent + compatibility for sort 
+
+  }
+
+  getContactInfo  = async () => { //for when u press button
+  return null; //needs path to do stuff
+  
+  }
+
+  openProfile() = async () => { //for when u press button
+  return null; //will open modal and get the info for the user you are looking at and set open/close
+  
+  }
 
 
 
@@ -35,15 +51,27 @@ export default function MatchesScreen() {
 
 const [matches, setMatches] = useState([]);
 
+const [profile, setProfile] = useState(false); //contact modal open/close
+const [con, setCon] = useState(false); //contact modal open/close
+
 useEffect(() => {
     const loadMatches = async () => {
       let result = await getMatchData(getId());
       console.log(typeof result, JSON.stringify(result));
       setMatches(result);
+
+      getPercent() //useless rn
+
+
+
     }
     loadMatches();
   }, []);
 
+const conModal = async () =>
+{
+
+}
 
 
   return (
@@ -61,6 +89,8 @@ useEffect(() => {
     {match.Occupation && <Text>{match.Occupation}</Text>}
     {match.Sexuality && <Text>{match.Sexuality}</Text>}</View>
  <View><Button text="Contact" id="contactButton"></Button></View>
+ <Modal></Modal>
+ <Modal></Modal>
   </View>
 ))}
     </View>
