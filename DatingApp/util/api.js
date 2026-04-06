@@ -60,6 +60,36 @@ const data = {
     let payload = await response.json();
     return payload;
   },
+  getPaidMembers: async () => {
+    const token = await getAccessToken();
+
+    let response = await fetch(serverRoute("get_paid_members"), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = response.json();
+    return payload;
+  },
+  getNonPaidMembers: async () => {
+    const token = await getAccessToken();
+
+    let response = await fetch(serverRoute("get_non_paid_members"), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = response.json();
+    return payload;
+  },
 };
 
 const auth = {

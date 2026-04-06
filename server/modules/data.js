@@ -138,7 +138,39 @@ const getAllInterests = async () => {
   }
 };
 
+const getPaidMembers = async (req) => {
+  try {
+    const { count, error } = await db
+      .from("profile_data")
+      .select("*", { count: "exact" })
+      .eq("isPaid", true);
+
+    if (error) console.error(error);
+    console.log("PAID MEMBERS", count);
+    return count;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const getNonPaidMembers = async (req) => {
+  try {
+    const { count, error } = await db
+      .from("profile_data")
+      .select("*", { count: "exact" })
+      .eq("isPaid", false);
+
+    if (error) console.error(error);
+    console.log("NON PAID MEMBERS", count);
+    return count;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export {
+  getNonPaidMembers,
+  getPaidMembers,
   getUserData,
   getAllInterests,
   signUpUser,
