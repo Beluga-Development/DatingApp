@@ -9,7 +9,10 @@ import {
   requireAuth,
   signOutUser,
   signUpUser,
-  getMatchData
+  getMatchData,
+  addMatch,
+  addContact,
+  getContactData
 } from "./data.js";
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 
@@ -65,6 +68,22 @@ app.post("/match_data/:id", requireAuth, async (req, res) => {
   res.send(result);
 });
 
+app.post("/contact_data/:id", requireAuth, async (req, res) => {
+  const field_key = req.params.id;
+  console.log("Field-kEY", field_key);
+  let result = await getContactData(field_key);
+  res.send(result);
+});
+
+app.post("/add_contact/:id/:type/:info", requireAuth, async (req, res) => {
+  const field_key1 = req.params.id;
+  const field_key2 = req.params.type;
+  const field_key3 = req.params.info;
+  console.log("Field-kEY", field_key1);
+  let result = await addContact(field_key1, field_key2, field_key3);
+  res.send(result);
+});
+
 app.post("/add_match/:idA/:idB", requireAuth, async (req, res) => {
   const field_key1 = req.params.idA;
   const field_key2 = req.params.idB;
@@ -72,6 +91,8 @@ app.post("/add_match/:idA/:idB", requireAuth, async (req, res) => {
   let result = await addMatch(field_key1, field_key2);
   res.send(result);
 });
+
+
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;

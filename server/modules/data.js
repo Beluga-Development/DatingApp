@@ -69,7 +69,7 @@ const getMatchData = async (id) => {
   .eq('user1', id)
 
     if (error) console.error(error);
-    console.log("Get User Data: ", data);
+    console.log("Get match Data: ", data);
     return data;
   } catch (err) {
     console.error(err);
@@ -86,7 +86,35 @@ const addMatch = async (idA, idB) => {
   ])
   
     if (error) console.error(error);
-    console.log("Get User Data: ", data);
+    console.log("add match data: ", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const addContact = async (id, _type, _info) => {
+  try {
+    const { data, error } = await db
+  .from('contact')
+  .insert({ user: id, type: _type, info: _info })
+    if (error) console.error(error);
+    console.log("add contact data: ", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const getContactData = async (id) => {
+  try {
+    const { data, error } = await db
+  .from('contact')
+  .select('type, info')
+  .eq('user', id)
+  
+    if (error) console.error(error);
+    console.log("get contact data: ", data);
     return data;
   } catch (err) {
     console.error(err);
@@ -190,5 +218,7 @@ export {
   requireAuth,
   signOutUser,
   getMatchData,
-  addMatch
+  addMatch,
+  addContact,
+  getContactData
 };
