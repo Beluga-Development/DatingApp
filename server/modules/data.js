@@ -64,7 +64,10 @@ const getMatchData = async (id) => {
       Occupation,
       DateOfBirth,
       ProfilePicture
-    )
+    ),
+
+    user_intrests(*)
+
   `)
   .eq('user1', id)
 
