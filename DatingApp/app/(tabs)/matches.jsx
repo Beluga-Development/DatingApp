@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { useState, useEffect, Paper, CardContent } from "react";
+import { useState, useEffect } from "react";
 import * as api from "../../util/api.js";
 import Button from "../../components/Button";
 
