@@ -21,6 +21,11 @@
 - Client login/signup/logout via `DatingApp/util/api.js` and session in local storage
 - Tab navigation layout with `Home`, `Matches`, `Profile` in `app/(tabs)`
 
+## In progress
+
+- Profile Creation input screen + backend
+- Matches screen + backend
+
 ## Additional comments
 
 - Starting the program and server.

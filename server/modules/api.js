@@ -12,7 +12,10 @@ import {
   getMatchData,
   addMatch,
   addContact,
-  getContactData
+  getContactData,
+  getPaidMembers,
+  getNonPaidMembers,
+  getMatchesThatContacted,
 } from "./data.js";
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 
@@ -61,10 +64,9 @@ app.post("/user_data", requireAuth, async (req, res) => {
   res.send(result);
 });
 
-app.post("/match_data/:id", requireAuth, async (req, res) => {
-  const field_key = req.params.id;
-  console.log("Field-kEY", field_key);
-  let result = await getMatchData(field_key);
+app.post("/match_data", requireAuth, async (req, res) => {
+  let result = await getMatchData(req);
+  console.log("MATCH DATA RESULT", result);
   res.send(result);
 });
 
@@ -92,8 +94,6 @@ app.post("/add_match/:idA/:idB", requireAuth, async (req, res) => {
   res.send(result);
 });
 
-
-
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   let result = await loginUser(email, password);
@@ -104,6 +104,21 @@ app.post("/logout", requireAuth, async (req, res) => {
   const token = req.accessToken;
   await signOutUser(token);
   res.send({ message: "Logged out" });
+});
+
+app.post("/get_paid_members", requireAuth, async (req, res) => {
+  let result = await getPaidMembers(req);
+  res.send(result);
+});
+
+app.post("/get_non_paid_members", requireAuth, async (req, res) => {
+  let result = await getNonPaidMembers(req);
+  res.send(result);
+});
+
+app.post("/get_matches_contacted", requireAuth, async (req, res) => {
+  let result = await getMatchesThatContacted(req);
+  res.send(result);
 });
 
 // Start the server listening on PORT, then call the callback (second argument)
