@@ -236,4 +236,29 @@ export default StyleSheet.create({
   icon: {
     color: palette.text,
   },
+  skeletonProfile: {
+    width: 58,
+    height: 78,
+    borderRadius: 29,
+    backgroundColor: palette.accent,
+  },
+  skeletonName: {
+    height: 24,
+    borderRadius: 4,
+    backgroundColor: palette.accent,
+    marginBottom: 10,
+    width: "70%",
+  },
+  skeletonStrip: {
+    height: 12,
+    borderRadius: 8,
+    backgroundColor: palette.accent,
+    width: "100%",
+  },
+  skeletonButton: {
+    minWidth: 60,
+    height: 28,
+    borderRadius: 60,
+    backgroundColor: palette.accent,
+  },
 });
