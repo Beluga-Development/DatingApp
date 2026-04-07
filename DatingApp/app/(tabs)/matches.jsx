@@ -20,6 +20,8 @@ export default function MatchesScreen() {
     const loadMatches = async () => {
       let result = await getMatchData();
       setMatches(result);
+      //console.log(result[0].profile_data.contact);
+      //console.log(result[0].profile_data.user_interest);
     };
     loadMatches();
   }, []);
@@ -27,7 +29,7 @@ export default function MatchesScreen() {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <Text>Ranked Matches</Text>
-      {/* <Button text="get matches" onPress={getMatchData} /> */}
+      <Button text="get matches" onPress={getMatchData} />
       {matches &&
         matches.map((match, index) => (
           <View

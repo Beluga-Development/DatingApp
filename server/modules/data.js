@@ -62,6 +62,7 @@ const getUserData = async (req) => {
 //       id: 126,
 //       Gender: 'Female',
 //       isPaid: false,
+//       contact: [Array],
 //       LastName: 'Robertson',
 //       FirstName: 'Alessia',
 //       Sexuality: 'Bisexual',
@@ -69,6 +70,7 @@ const getUserData = async (req) => {
 //       created_at: '2026-03-25T02:57:31.471735+00:00',
 //       DateOfBirth: '2000-11-05',
 //       fk_user_data: 126,
+//       user_interest: [Array],
 //       ProfilePicture: null
 //     }
 //   },
@@ -83,6 +85,7 @@ const getUserData = async (req) => {
 //       id: 11,
 //       Gender: 'Male',
 //       isPaid: false,
+//       contact: [Array],
 //       LastName: 'Harris',
 //       FirstName: 'Noah',
 //       Sexuality: 'Straight',
@@ -90,6 +93,7 @@ const getUserData = async (req) => {
 //       created_at: '2026-03-25T02:57:31.471735+00:00',
 //       DateOfBirth: '1996-09-18',
 //       fk_user_data: 11,
+//       user_interest: [Array],
 //       ProfilePicture: null
 //     }
 //   },
@@ -104,6 +108,7 @@ const getUserData = async (req) => {
 //       id: 12,
 //       Gender: 'Female',
 //       isPaid: false,
+//       contact: [Array],
 //       LastName: 'Carter',
 //       FirstName: 'Olivia',
 //       Sexuality: 'Bisexual',
@@ -111,6 +116,7 @@ const getUserData = async (req) => {
 //       created_at: '2026-03-25T02:57:31.471735+00:00',
 //       DateOfBirth: '1999-04-12',
 //       fk_user_data: 12,
+//       user_interest: [Array],
 //       ProfilePicture: null
 //     }
 //   },
@@ -125,6 +131,7 @@ const getUserData = async (req) => {
 //       id: 14,
 //       Gender: 'Female',
 //       isPaid: false,
+//       contact: [Array],
 //       LastName: 'Martinez',
 //       FirstName: 'Ava',
 //       Sexuality: 'Straight',
@@ -132,6 +139,7 @@ const getUserData = async (req) => {
 //       created_at: '2026-03-25T02:57:31.471735+00:00',
 //       DateOfBirth: '1997-08-09',
 //       fk_user_data: 14,
+//       user_interest: [Array],
 //       ProfilePicture: null
 //     }
 //   },
@@ -146,6 +154,7 @@ const getUserData = async (req) => {
 //       id: 10,
 //       Gender: 'Female',
 //       isPaid: false,
+//       contact: [Array],
 //       LastName: 'Williams',
 //       FirstName: 'Emma',
 //       Sexuality: 'Straight',
@@ -153,6 +162,7 @@ const getUserData = async (req) => {
 //       created_at: '2026-03-25T02:57:31.471735+00:00',
 //       DateOfBirth: '1994-01-30',
 //       fk_user_data: 10,
+//       user_interest: [Array],
 //       ProfilePicture: null
 //     }
 //   }
@@ -172,7 +182,15 @@ const getMatchData = async (req) => {
 
     const { data, error } = await db
       .from("matches")
-      .select(`*, profile_data!matches_user2_fkey(*).eq("id", user2)`)
+      .select(
+        `*, 
+        profile_data!matches_user2_fkey(
+          *,
+          contact:Contact(*),
+          user_interest(interests(*))
+        )
+        `,
+      )
       .eq("user1", profileDataId)
       .order("match_score", { ascending: false });
 
