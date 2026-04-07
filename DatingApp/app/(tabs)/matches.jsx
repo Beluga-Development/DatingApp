@@ -1,9 +1,9 @@
 import { Text, View } from "react-native";
 import { useState, useEffect } from "react";
 import * as api from "../../util/api.js";
-import Button from "../../components/Button";
+import Button from "../../components/Button"
+import Modal from "../../components/Modal"
 
-export default function MatchesScreen() {
   const [matches, setMatches] = useState();
 
   const getMatchData = async () => {
@@ -16,7 +16,35 @@ export default function MatchesScreen() {
     }
   };
 
-  useEffect(() => {
+  const getPercent = async () => {
+    return null; //needs path and logic to do stuff 
+
+    //UI bar percent + compatibility for sort 
+
+  }
+
+  getContactInfo  = async () => { //for when u press button
+  return null; //needs path to do stuff
+  
+  }
+
+  openProfile() = async () => { //for when u press button
+  return null; //will open modal and get the info for the user you are looking at and set open/close
+  
+  }
+
+
+
+export default function MatchesScreen() {
+
+const [matches, setMatches] = useState([]);
+
+const [profile, setProfile] = useState(false); //contact modal open/close
+const [con, setCon] = useState(false); //contact modal open/close
+
+
+
+useEffect(() => {
     const loadMatches = async () => {
       let result = await getMatchData();
       setMatches(result);
