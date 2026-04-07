@@ -1,7 +1,8 @@
-import { Text, View } from "react-native";
+import { Text, View, ScrollView } from "react-native";
 import { useState, useEffect } from "react";
 import * as api from "../../util/api.js";
 import Button from "../../components/Button";
+import style from "../../style.js";
 
 export default function MatchesScreen() {
   const [matches, setMatches] = useState([]);
@@ -27,38 +28,54 @@ export default function MatchesScreen() {
   }, []);
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Ranked Matches</Text>
-      <Button text="get matches" onPress={getMatchData} />
-      {matches &&
-        matches.map((match, index) => (
-          <View
-            key={index}
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              marginBottom: 10,
-              padding: 10,
-              borderWidth: 2,
-              borderColor: "#ccc",
-              borderRadius: 20,
-            }}
-          >
-            <View>
-              <Button id="profileButton">
-                <img src="" />
-              </Button>
+    <View style={style.app}>
+      <Text style={style.header}>Ranked Matches</Text>
+      <View style={style.headerUnderline} />
+      <ScrollView
+        style={style.matchList}
+        contentContainerStyle={style.matchListContent}
+      >
+        {matches.map((match, index) => {
+          const fillWidth = match.match_score
+            ? `${Math.min(100, Math.max(12, match.match_score))}%`
+            : "70%";
+
+          const fillPercent = parseFloat(fillWidth);
+          const r = Math.round(202 + (fillPercent / 100) * 53);
+          const g = Math.round(202 - (fillPercent / 100) * 43);
+          const b = Math.round(202 - (fillPercent / 100) * 1);
+          const stripColor = `rgb(${r}, ${g}, ${b})`;
+
+          return (
+            <View key={index} style={style.matchCard}>
+              <Button text="" style={style.profileButton} onPress={() => {}} />
+              <View style={style.matchInfo}>
+                <Text style={style.matchName}>
+                  {match.profile_data.FirstName}
+                </Text>
+                <View style={style.matchStripBox}>
+                  <View
+                    style={[
+                      style.matchStrip,
+                      {
+                        width: fillWidth,
+                        shadowColor: stripColor,
+                        backgroundColor: stripColor,
+                      },
+                    ]}
+                  />
+                </View>
+              </View>
+              <Button
+                text="Contact"
+                style={style.contactButton}
+                textStyle={style.contactButtonText}
+                onPress={() => {}}
+              />
             </View>
-            <View id="userInfo">
-              <Text
-                style={{ fontWeight: "bold" }}
-              >{`${match.profile_data.FirstName}\n${match.match_score}`}</Text>
-            </View>
-            <View>
-              <Button text="Contact"></Button>
-            </View>
-          </View>
-        ))}
+          );
+        })}
+      </ScrollView>
     </View>
   );
 }
