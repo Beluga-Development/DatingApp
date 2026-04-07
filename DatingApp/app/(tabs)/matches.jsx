@@ -1,11 +1,12 @@
-import { Text, View, ScrollView } from "react-native";
-import { useState, useEffect } from "react";
+import { Text, View, ScrollView, RefreshControl } from "react-native";
+import { useState, useEffect, useCallback } from "react";
 import * as api from "../../util/api.js";
 import Button from "../../components/Button";
 import style from "../../style.js";
 
 export default function MatchesScreen() {
   const [matches, setMatches] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const getMatchData = async () => {
     try {
@@ -16,6 +17,14 @@ export default function MatchesScreen() {
       return [];
     }
   };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(async () => {
+      setRefreshing(false);
+      setMatches(await getMatchData());
+    }, 2000);
+  }, []);
 
   useEffect(() => {
     const loadMatches = async () => {
@@ -34,6 +43,9 @@ export default function MatchesScreen() {
       <ScrollView
         style={style.matchList}
         contentContainerStyle={style.matchListContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         {matches.map((match, index) => {
           const fillWidth = match.match_score
