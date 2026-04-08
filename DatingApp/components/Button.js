@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { useState } from "react";
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, Image } from "react-native";
 
 import style from "../style.js";
 
@@ -23,7 +23,12 @@ function Button(props) {
       onPressIn={pressIn}
       onPressOut={pressOut}
     >
-      {props?.icon ? (
+      {props?.picture ? (
+        <Image
+          source={props.picture}
+          style={{ width: "100%", height: "100%", borderRadius: 32 }}
+        />
+      ) : props?.icon ? (
         <Ionicons
           name={props.icon.name}
           size={props.icon.size}

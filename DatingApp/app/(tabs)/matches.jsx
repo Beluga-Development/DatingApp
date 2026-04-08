@@ -11,6 +11,14 @@ import * as api from "../../util/api.js";
 import Button from "../../components/Button";
 import style from "../../style.js";
 
+const pictures = [
+  require("../../assets/images/person2.jpg"),
+  require("../../assets/images/person1.jpg"),
+  require("../../assets/images/person3.jpg"),
+  require("../../assets/images/person4.jpg"),
+  require("../../assets/images/person5.jpg"),
+];
+
 export default function MatchesScreen() {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -86,6 +94,8 @@ export default function MatchesScreen() {
               </View>
             ))
           : matches.map((match, index) => {
+              match.index = index;
+
               const fillWidth = match.match_score
                 ? `${Math.min(100, Math.max(12, match.match_score))}%`
                 : "70%";
@@ -103,6 +113,7 @@ export default function MatchesScreen() {
                 <View key={index} style={style.matchCard}>
                   <Button
                     text=""
+                    picture={pictures[index]}
                     style={style.profileButton}
                     onPress={() => {
                       setModalVisible(true);
@@ -151,9 +162,7 @@ export default function MatchesScreen() {
             <Text style={style.modalTitle}>Viewing Profile</Text>
             <View style={style.modalHeaderUnderline} />
             <Image
-              source={{
-                uri: "https://reactnative.dev/img/tiny_logo.png",
-              }}
+              source={pictures[viewProfile?.index]}
               style={style.modalPicture}
             />
             <View style={style.modalContent}>
