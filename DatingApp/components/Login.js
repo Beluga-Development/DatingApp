@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { View, Text, TextInput, Pressable, StatusBar, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StatusBar,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as api from "../util/api.js";
 import styles, { palette } from "../style.js";
@@ -65,7 +72,7 @@ function Login({ setIsLoggedIn }) {
         <TextInput
           style={styles.loginInput}
           placeholder="email@email.com"
-          placeholderTextColor={palette.border}
+          placeholderTextColor={palette.contrast}
           keyboardType="email-address"
           autoCapitalize="none"
           textContentType="emailAddress"
@@ -76,7 +83,7 @@ function Login({ setIsLoggedIn }) {
         <TextInput
           style={styles.loginInput}
           placeholder="password"
-          placeholderTextColor={palette.border}
+          placeholderTextColor={palette.contrast}
           secureTextEntry={true}
           autoCapitalize="none"
           textContentType="password"
