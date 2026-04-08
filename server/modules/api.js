@@ -66,7 +66,6 @@ app.post("/user_data", requireAuth, async (req, res) => {
 
 app.post("/match_data", requireAuth, async (req, res) => {
   let result = await getMatchData(req);
-  console.log("MATCH DATA RESULT", result);
   res.send(result);
 });
 
