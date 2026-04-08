@@ -6,6 +6,7 @@ import {
   Modal,
   Image,
 } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import { useState, useEffect, useCallback } from "react";
 import * as api from "../../util/api.js";
 import Button from "../../components/Button";
@@ -24,6 +25,7 @@ export default function MatchesScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [showContact, setShowContact] = useState(false);
   const [viewProfile, setViewProfile] = useState();
 
   const calculateAge = (birthDate) => {
@@ -141,7 +143,11 @@ export default function MatchesScreen() {
                     text="Contact"
                     style={style.contactButton}
                     textStyle={style.contactButtonText}
-                    onPress={() => {}}
+                    onPress={() => {
+                      setShowContact(true);
+                      setModalVisible(true);
+                      setViewProfile(match);
+                    }}
                   />
                 </View>
               );
@@ -152,70 +158,108 @@ export default function MatchesScreen() {
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
-        <ScrollView>
+        {showContact ? (
           <View style={style.modalContainer}>
             <Button
               icon={{ name: "close", size: 24 }}
               style={style.closeButton}
-              onPress={() => setModalVisible(false)}
+              onPress={() => {
+                setModalVisible(false);
+                setShowContact(false);
+              }}
             />
-            <Text style={style.modalTitle}>Viewing Profile</Text>
+            <Text style={style.modalTitle}>Contact Information</Text>
             <View style={style.modalHeaderUnderline} />
-            <Image
-              source={pictures[viewProfile?.index]}
-              style={style.modalPicture}
-            />
             <View style={style.modalContent}>
-              <Text style={style.matchScoreText}>
-                {viewProfile?.match_score}% Match Score
-              </Text>
-
-              <View style={style.matchScoreBar}>
-                <View
-                  style={[
-                    style.matchStrip,
-                    {
-                      width: viewProfile?.fillWidth,
-                      shadowColor: viewProfile?.stripColor,
-                      backgroundColor: viewProfile?.stripColor,
-                    },
-                  ]}
-                />
-              </View>
-              <View style={style.profileInfo}>
-                <Text style={style.profileName}>
-                  {viewProfile?.profile_data.FirstName +
-                    " " +
-                    viewProfile?.profile_data.LastName}
-                </Text>
-                <Text style={style.profileInfoText}>
-                  {viewProfile?.profile_data.Occupation}
-                </Text>
-                <Text style={style.profileMeta}>
-                  {viewProfile?.profile_data.Gender +
-                    " | " +
-                    calculateAge(viewProfile?.profile_data.DateOfBirth) +
-                    " | " +
-                    viewProfile?.profile_data.Sexuality}
-                </Text>
-              </View>
-              <View style={style.interests}>
-                <Text style={style.interestsHeader}>Interests</Text>
-                {viewProfile?.profile_data.user_interest.map(
-                  (interest, index) => {
-                    return (
-                      <View key={index} style={style.interestItem}>
-                        <Text style={style.interestText}>
-                          {interest.interests.name}
-                        </Text>
-                      </View>
-                    );
-                  },
-                )}
-              </View>
+              {viewProfile?.profile_data.contact.map((contact) => (
+                <View key={contact.id} style={style.contactItem}>
+                  <Text style={style.contactText}>
+                    {contact.type.charAt(0).toUpperCase() +
+                      contact.type.slice(1)}
+                    : {contact.info}
+                  </Text>
+                  <Button
+                    icon={{ name: "copy-outline", size: 20 }}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      backgroundColor: "#ffff",
+                    }}
+                    onPress={async () =>
+                      await Clipboard.setStringAsync(contact.info)
+                    }
+                  />
+                </View>
+              ))}
             </View>
           </View>
-        </ScrollView>
+        ) : (
+          <ScrollView>
+            <View style={style.modalContainer}>
+              <Button
+                icon={{ name: "close", size: 24 }}
+                style={style.closeButton}
+                onPress={() => setModalVisible(false)}
+              />
+              <Text style={style.modalTitle}>Viewing Profile</Text>
+              <View style={style.modalHeaderUnderline} />
+              <Image
+                source={pictures[viewProfile?.index]}
+                style={style.modalPicture}
+              />
+              <View style={style.modalContent}>
+                <Text style={style.matchScoreText}>
+                  {viewProfile?.match_score}% Match Score
+                </Text>
+
+                <View style={style.matchScoreBar}>
+                  <View
+                    style={[
+                      style.matchStrip,
+                      {
+                        width: viewProfile?.fillWidth,
+                        shadowColor: viewProfile?.stripColor,
+                        backgroundColor: viewProfile?.stripColor,
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={style.profileInfo}>
+                  <Text style={style.profileName}>
+                    {viewProfile?.profile_data.FirstName +
+                      " " +
+                      viewProfile?.profile_data.LastName}
+                  </Text>
+                  <Text style={style.profileInfoText}>
+                    {viewProfile?.profile_data.Occupation}
+                  </Text>
+                  <Text style={style.profileMeta}>
+                    {viewProfile?.profile_data.Gender +
+                      " | " +
+                      calculateAge(viewProfile?.profile_data.DateOfBirth) +
+                      " | " +
+                      viewProfile?.profile_data.Sexuality}
+                  </Text>
+                </View>
+                <View style={style.interests}>
+                  <Text style={style.interestsHeader}>Interests</Text>
+                  {viewProfile?.profile_data.user_interest.map(
+                    (interest, index) => {
+                      return (
+                        <View key={index} style={style.interestItem}>
+                          <Text style={style.interestText}>
+                            {interest.interests.name}
+                          </Text>
+                        </View>
+                      );
+                    },
+                  )}
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        )}
       </Modal>
     </View>
   );
