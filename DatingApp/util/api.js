@@ -34,6 +34,23 @@ const data = {
     let payload = await response.json();
     return payload;
   },
+
+  getMatchData: async () => {
+    const token = await getAccessToken();
+
+    let response = await fetch(serverRoute("match_data"), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = await response.json();
+    return payload;
+  },
+
   getAllInterests: async () => {
     let response = await fetch(serverRoute("interests"), {
       headers,
@@ -47,6 +64,58 @@ const data = {
     let payload = await response.json();
     return payload;
   },
+
+  addMatch: async (userA, userB) => {
+    const token = await getAccessToken();
+    let response = await fetch(
+      serverRoute("add_match/" + userA + "/" + userB),
+      {
+        method: "POST",
+        headers: {
+          Accept: "*/*",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    let payload = await response.json();
+    return payload;
+  },
+
+  addContact: async (user, type, info) => {
+    const token = await getAccessToken();
+    let response = await fetch(
+      serverRoute("add_contact/" + user + "/" + type + "/" + info),
+      {
+        method: "POST",
+        headers: {
+          Accept: "*/*",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    let payload = await response.json();
+    return payload;
+  },
+
+  getContactData: async (user) => {
+    const token = await getAccessToken();
+    let response = await fetch(serverRoute("get_contact/" + user), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = await response.json();
+    return payload;
+  },
+
   getHelloWorld: async () => {
     let response = await fetch(serverRoute("helloworld"), {
       headers,

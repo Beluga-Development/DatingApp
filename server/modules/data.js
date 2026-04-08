@@ -50,6 +50,200 @@ const getUserData = async (req) => {
   }
 };
 
+// EXAMPLE: MATCH DATA RESULT [
+//   {//THIS IS THE MATCH ROW
+//     created_at: '2026-03-09T15:11:11+00:00',
+//     user1: 210,
+//     user2: 126,
+//     didContact: true,
+//     id: 210,
+//     match_score: 100, ORDERED BY SCORE
+//     profile_data: { PROFILE DATA FOR MATCH PERSON
+//       id: 126,
+//       Gender: 'Female',
+//       isPaid: false,
+//       contact: [Array],
+//       LastName: 'Robertson',
+//       FirstName: 'Alessia',
+//       Sexuality: 'Bisexual',
+//       Occupation: 'Flask Developer',
+//       created_at: '2026-03-25T02:57:31.471735+00:00',
+//       DateOfBirth: '2000-11-05',
+//       fk_user_data: 126,
+//       user_interest: [Array],
+//       ProfilePicture: null
+//     }
+//   },
+//   {
+//     created_at: '2026-03-09T15:11:11+00:00',
+//     user1: 210,
+//     user2: 11,
+//     didContact: true,
+//     id: 207,
+//     match_score: 75,
+//     profile_data: {
+//       id: 11,
+//       Gender: 'Male',
+//       isPaid: false,
+//       contact: [Array],
+//       LastName: 'Harris',
+//       FirstName: 'Noah',
+//       Sexuality: 'Straight',
+//       Occupation: 'Cybersecurity Analyst',
+//       created_at: '2026-03-25T02:57:31.471735+00:00',
+//       DateOfBirth: '1996-09-18',
+//       fk_user_data: 11,
+//       user_interest: [Array],
+//       ProfilePicture: null
+//     }
+//   },
+//   {
+//     created_at: '2026-03-09T15:11:11+00:00',
+//     user1: 210,
+//     user2: 12,
+//     didContact: true,
+//     id: 208,
+//     match_score: 50,
+//     profile_data: {
+//       id: 12,
+//       Gender: 'Female',
+//       isPaid: false,
+//       contact: [Array],
+//       LastName: 'Carter',
+//       FirstName: 'Olivia',
+//       Sexuality: 'Bisexual',
+//       Occupation: 'Product Manager',
+//       created_at: '2026-03-25T02:57:31.471735+00:00',
+//       DateOfBirth: '1999-04-12',
+//       fk_user_data: 12,
+//       user_interest: [Array],
+//       ProfilePicture: null
+//     }
+//   },
+//   {
+//     created_at: '2026-03-09T15:11:11+00:00',
+//     user1: 210,
+//     user2: 14,
+//     didContact: true,
+//     id: 209,
+//     match_score: 45,
+//     profile_data: {
+//       id: 14,
+//       Gender: 'Female',
+//       isPaid: false,
+//       contact: [Array],
+//       LastName: 'Martinez',
+//       FirstName: 'Ava',
+//       Sexuality: 'Straight',
+//       Occupation: 'Machine Learning Engineer',
+//       created_at: '2026-03-25T02:57:31.471735+00:00',
+//       DateOfBirth: '1997-08-09',
+//       fk_user_data: 14,
+//       user_interest: [Array],
+//       ProfilePicture: null
+//     }
+//   },
+//   {
+//     created_at: '2026-03-09T15:11:11+00:00',
+//     user1: 210,
+//     user2: 10,
+//     didContact: true,
+//     id: 206,
+//     match_score: 20,
+//     profile_data: {
+//       id: 10,
+//       Gender: 'Female',
+//       isPaid: false,
+//       contact: [Array],
+//       LastName: 'Williams',
+//       FirstName: 'Emma',
+//       Sexuality: 'Straight',
+//       Occupation: 'UX Designer',
+//       created_at: '2026-03-25T02:57:31.471735+00:00',
+//       DateOfBirth: '1994-01-30',
+//       fk_user_data: 10,
+//       user_interest: [Array],
+//       ProfilePicture: null
+//     }
+//   }
+// ]
+const getMatchData = async (req) => {
+  try {
+    const getProfileDataId = async () => {
+      const { data, error } = await db
+        .from("user_data")
+        .select("id, profile_data(id)")
+        .eq("user_id", req.user.id);
+      if (error) console.error(error);
+      return data[0].profile_data.id;
+    };
+
+    let profileDataId = await getProfileDataId();
+
+    const { data, error } = await db
+      .from("matches")
+      .select(
+        `*, 
+        profile_data!matches_user2_fkey(
+          *,
+          contact:Contact(*),
+          user_interest(interests(*))
+        )
+        `,
+      )
+      .eq("user1", profileDataId)
+      .order("match_score", { ascending: false });
+
+    console.error(error);
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const addMatch = async (idA, idB) => {
+  try {
+    const { data, error } = await db.from("matches").insert([
+      { userA: idA, userB: idB },
+      { userA: idB, userB: idA },
+    ]);
+
+    if (error) console.error(error);
+    console.log("add match data: ", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const addContact = async (id, _type, _info) => {
+  try {
+    const { data, error } = await db
+      .from("contact")
+      .insert({ user: id, type: _type, info: _info });
+    if (error) console.error(error);
+    console.log("add contact data: ", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const getContactData = async (id) => {
+  try {
+    const { data, error } = await db
+      .from("contact")
+      .select("type, info")
+      .eq("user", id);
+
+    if (error) console.error(error);
+    console.log("get contact data: ", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 const signUpUser = async (email, passowrd) => {
   try {
     const { data, error } = await db.auth.signUp({
@@ -194,4 +388,8 @@ export {
   loginUser,
   requireAuth,
   signOutUser,
+  getMatchData,
+  addMatch,
+  addContact,
+  getContactData,
 };

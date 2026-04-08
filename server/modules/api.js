@@ -9,6 +9,10 @@ import {
   requireAuth,
   signOutUser,
   signUpUser,
+  getMatchData,
+  addMatch,
+  addContact,
+  getContactData,
   getPaidMembers,
   getNonPaidMembers,
   getMatchesThatContacted,
@@ -57,6 +61,35 @@ app.post("/sign_up", async (req, res) => {
 
 app.post("/user_data", requireAuth, async (req, res) => {
   let result = await getUserData(req);
+  res.send(result);
+});
+
+app.post("/match_data", requireAuth, async (req, res) => {
+  let result = await getMatchData(req);
+  res.send(result);
+});
+
+app.post("/contact_data/:id", requireAuth, async (req, res) => {
+  const field_key = req.params.id;
+  console.log("Field-kEY", field_key);
+  let result = await getContactData(field_key);
+  res.send(result);
+});
+
+app.post("/add_contact/:id/:type/:info", requireAuth, async (req, res) => {
+  const field_key1 = req.params.id;
+  const field_key2 = req.params.type;
+  const field_key3 = req.params.info;
+  console.log("Field-kEY", field_key1);
+  let result = await addContact(field_key1, field_key2, field_key3);
+  res.send(result);
+});
+
+app.post("/add_match/:idA/:idB", requireAuth, async (req, res) => {
+  const field_key1 = req.params.idA;
+  const field_key2 = req.params.idB;
+  console.log("Field-kEY", field_key1);
+  let result = await addMatch(field_key1, field_key2);
   res.send(result);
 });
 
