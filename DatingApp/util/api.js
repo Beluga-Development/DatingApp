@@ -19,6 +19,38 @@ const getAccessToken = async () => {
 const serverRoute = (route) => `${API_IP}:${API_PORT}/${route}`;
 
 const data = {
+  getUserData: async () => {
+    const token = await getAccessToken();
+
+    let response = await fetch(serverRoute("user_data"), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = await response.json();
+    return payload;
+  },
+
+  getMatchData: async () => {
+    const token = await getAccessToken();
+
+    let response = await fetch(serverRoute("match_data"), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = await response.json();
+    return payload;
+  },
+
   getAllInterests: async () => {
     let response = await fetch(serverRoute("interests"), {
       headers,
@@ -32,6 +64,58 @@ const data = {
     let payload = await response.json();
     return payload;
   },
+
+  addMatch: async (userA, userB) => {
+    const token = await getAccessToken();
+    let response = await fetch(
+      serverRoute("add_match/" + userA + "/" + userB),
+      {
+        method: "POST",
+        headers: {
+          Accept: "*/*",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    let payload = await response.json();
+    return payload;
+  },
+
+  addContact: async (user, type, info) => {
+    const token = await getAccessToken();
+    let response = await fetch(
+      serverRoute("add_contact/" + user + "/" + type + "/" + info),
+      {
+        method: "POST",
+        headers: {
+          Accept: "*/*",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    let payload = await response.json();
+    return payload;
+  },
+
+  getContactData: async (user) => {
+    const token = await getAccessToken();
+    let response = await fetch(serverRoute("get_contact/" + user), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = await response.json();
+    return payload;
+  },
+
   getHelloWorld: async () => {
     let response = await fetch(serverRoute("helloworld"), {
       headers,
@@ -45,7 +129,53 @@ const data = {
     let payload = await response.json();
     return payload;
   },
-  getAllUserData: async () => {
+  getPaidMembers: async () => {
+    const token = await getAccessToken();
+
+    let response = await fetch(serverRoute("get_paid_members"), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = response.json();
+    return payload;
+  },
+  getNonPaidMembers: async () => {
+    const token = await getAccessToken();
+
+    let response = await fetch(serverRoute("get_non_paid_members"), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = response.json();
+    return payload;
+  },
+  getMatchesThatContacted: async () => {
+    const token = await getAccessToken();
+
+    let response = await fetch(serverRoute("get_matches_contacted"), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    let payload = response.json();
+    return payload;
+  },
+
+  getCurrentProfileData: async () => {
     let token = await getAccessToken();
     let response = await fetch(serverRoute("user_data"), {
       headers: {
@@ -55,24 +185,7 @@ const data = {
       },
       method: "GET",
     });
-
-    if (!response.ok) {
-      throw new Error(`Request failed: ${response.status}`);
-    }
-    let payload = await response.json();
-    return payload;
-  },
-
-  getCurrentProfileData: async () => {
-    let token = await getAccessToken();
-    let response = await fetch(serverRoute("current_profile_data"), {
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      method: "GET",
-    });
+    console.log("GET CURRENT PROFILE DATA RESPONSE:", response);
     let payload = await response.json();
     console.log("profile data payload:", payload);
     if(payload?.length > 0){

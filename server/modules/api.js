@@ -4,15 +4,21 @@ import cors from "cors";
 import {
   addUserDataRow,
   getAllInterests,
-  getAllUserData,
-  getUserProfileData,
-  getCurrentUser,
+  getUserData,
   loginUser,
   requireAuth,
   saveProfileData,
   saveUserInterests,
   signOutUser,
   signUpUser,
+  getMatchData,
+  addMatch,
+  addContact,
+  getContactData,
+  getPaidMembers,
+  getNonPaidMembers,
+  getMatchesThatContacted,
+
 } from "./data.js";
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 
@@ -39,11 +45,6 @@ app.get("/helloworld", (req, res) => {
   res.json({ message: "Hello World" });
 });
 
-app.get("/user_data", requireAuth, async (req, res) => {
-  let result = await getAllUserData();
-  res.json(result);
-});
-
 app.get("/interests", async (req, res) => {
   let result = await getAllInterests();
   res.send(result);
@@ -61,6 +62,40 @@ app.post("/sign_up", async (req, res) => {
   });
 });
 
+app.get("/user_data", requireAuth, async (req, res) => {
+  let result = await getUserData(req);
+  res.send(result);
+});
+
+app.post("/match_data", requireAuth, async (req, res) => {
+  let result = await getMatchData(req);
+  res.send(result);
+});
+
+app.post("/contact_data/:id", requireAuth, async (req, res) => {
+  const field_key = req.params.id;
+  console.log("Field-kEY", field_key);
+  let result = await getContactData(field_key);
+  res.send(result);
+});
+
+app.post("/add_contact/:id/:type/:info", requireAuth, async (req, res) => {
+  const field_key1 = req.params.id;
+  const field_key2 = req.params.type;
+  const field_key3 = req.params.info;
+  console.log("Field-kEY", field_key1);
+  let result = await addContact(field_key1, field_key2, field_key3);
+  res.send(result);
+});
+
+app.post("/add_match/:idA/:idB", requireAuth, async (req, res) => {
+  const field_key1 = req.params.idA;
+  const field_key2 = req.params.idB;
+  console.log("Field-kEY", field_key1);
+  let result = await addMatch(field_key1, field_key2);
+  res.send(result);
+});
+
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   let result = await loginUser(email, password);
@@ -73,23 +108,18 @@ app.post("/logout", requireAuth, async (req, res) => {
   res.send({ message: "Logged out" });
 });
 
-app.get("/current_profile_data", requireAuth, async (req, res) => {
-  //needs to get auth from the req
-  // const user = await getCurrentUser(req.headers.authorization);
-  // let userId = user.id;
-  // console.log("USER ID IN PROFILE DATA ENDPOINT", userId);
-  let result = await getUserProfileData(req.user.id);
+app.post("/get_paid_members", requireAuth, async (req, res) => {
+  let result = await getPaidMembers(req);
   res.send(result);
 });
 
-app.get("/profile_data", requireAuth, async (req, res) => {
-  let userId = req.body.id;
-  if(!userId){
-    const user = await getCurrentUser(req.headers.authorization);
-    userId = user.id;
-    //console.log("USER ID IN PROFILE DATA ENDPOINT", userId);
-  }
-  let result = await getUserProfileData(userId);
+app.post("/get_non_paid_members", requireAuth, async (req, res) => {
+  let result = await getNonPaidMembers(req);
+  res.send(result);
+});
+
+app.post("/get_matches_contacted", requireAuth, async (req, res) => {
+  let result = await getMatchesThatContacted(req);
   res.send(result);
 });
 
