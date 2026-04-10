@@ -296,6 +296,7 @@ const loginUser = async (email, password) => {
     let result = {
       message: data?.session?.access_token ? "Login sucess" : "Login failed",
       session: {
+        userId: data?.session?.user?.id,
         access_token: data?.session?.access_token || null,
         refresh_token: data?.session?.refresh_token || null,
         expires_in: data?.session?.expires_in || null,
@@ -304,7 +305,7 @@ const loginUser = async (email, password) => {
       },
     };
 
-    //console.log("SIGN-IN-USER CONSOLE LOG OF DATA", result);
+    console.log("SIGN-IN-USER CONSOLE LOG OF DATA", result);
     return result;
   } catch (error) {
     console.error("LOGIN-USER ERROR", error);
@@ -358,7 +359,6 @@ const getAllInterests = async () => {
   }
 };
 
-
 const saveProfileData = async (profileData, userId) => {
   try {
     // const {data: testUserData, error: testUserError} = await db
@@ -369,17 +369,24 @@ const saveProfileData = async (profileData, userId) => {
     const { data: userData, error: userError } = await db
     .from("user_data")
     .select("*")
-    .eq('user_id', userId)
+    .eq('user_id', userId)  //This is the auth user id, we need to get the corresponding user_data row to link to profile_data
     .single();
     //console.log("USER DATA IN SAVE PROFILE DATA", userData);
     if (userError) {
       console.error("ERROR FETCHING USER DATA IN SAVE PROFILE DATA", userError);
       return;
     }
-    profileData.fk_user_data = userData.id;
+    const insertData = {
+      ...profileData,
+      fk_user_data: userData.id,  // Use the id from user_data as the foreign key in profile_data
+    };
+    delete insertData.ProfilePictureURI; // Remove the ProfilePictureURI field before inserting into the database
+    console.log("PROFILE DATA SENT IN SAVE PROFILE DATA", insertData);
     const { data, error } = await db
       .from("profile_data")
-      .insert({...profileData})
+      .upsert(insertData, {
+        onConflict: "fk_user_data", // must match UNIQUE column
+      })
       .select();
     if (error) console.error(error);
     //console.log("SAVE PROFILE DATA", data);
@@ -389,6 +396,7 @@ const saveProfileData = async (profileData, userId) => {
       console.error(err);
     }
 }
+
 const getPaidMembers = async (req) => {
   try {
     const { count, error } = await db

@@ -1,5 +1,6 @@
 import {Platform} from "react-native";
 import {deleteValue, getValueFor, save} from "./keyStorage";
+import db from "./db.js"; //needed for image upload to Supabase Storage, uses ANON-KEY
 
 const API_IP =
   Platform.OS === "android" ? "http://10.0.2.2" : "http://localhost";
@@ -16,14 +17,63 @@ const getAccessToken = async () => {
   return session?.access_token || "";
 };
 
+const getUserId = async () => {
+  const sessionString = await getValueFor("session");
+  const session = JSON.parse(sessionString);
+  return session?.userId || null;
+};
+
+//Helper for saving images to Supabase Storage needs to be in the client
+const uploadProfilePicture = async (uri, userId) => {
+  try {
+    // 1. Check your supabase client
+    console.log("DB CLIENT:", db);
+    
+    // 2. List buckets to confirm connection works
+    const { data: buckets, error: bucketError } = await db.storage.listBuckets();
+    console.log("BUCKETS:", buckets, bucketError);
+
+    const fileName = `${userId}-${Date.now()}.jpg`;
+
+    const response = await fetch(uri);
+    const arrayBuffer = await response.arrayBuffer();
+
+    const { data, error } = await db.storage
+      .from("Profile-Pictures")  // double check exact name including capitalisation
+      .upload(fileName, arrayBuffer, {
+        contentType: "image/jpeg",
+        upsert: true,
+      });
+
+    console.log("UPLOAD RESULT:", { data, error });
+
+    if (error) {
+      console.error("UPLOAD ERROR:", error);
+      return null;
+    }
+
+    return data.path;
+  } catch (err) {
+    console.error("UPLOAD FAILED:", err);
+    return null;
+  }
+};
+
 const serverRoute = (route) => `${API_IP}:${API_PORT}/${route}`;
 
 const data = {
+  
+  getProfileContext: async () => {
+    const profileDataString = await getValueFor("profileData");
+    console.log("getProfileContext called, profileDataString:", profileDataString);
+    return JSON.parse(profileDataString);
+  },
+
   getUserData: async () => {
     const token = await getAccessToken();
 
     let response = await fetch(serverRoute("user_data"), {
-      method: "POST",
+      method: "GET",
       headers: {
         Accept: "*/*",
         "Content-Type": "application/json",
@@ -185,18 +235,23 @@ const data = {
       },
       method: "GET",
     });
-    console.log("GET CURRENT PROFILE DATA RESPONSE:", response);
     let payload = await response.json();
-    console.log("profile data payload:", payload);
+    //console.log("profile data payload:", payload);
     if(payload?.length > 0){
-      await save("profileData", JSON.stringify(payload));
+      //Saves the profile data to the app context for easy access across screens without needing to make multiple API calls. 
+      //This is especially useful for the profile screen where we want to display the user's profile data without delay.
+      await save("profileData", JSON.stringify(payload));  
     }
     return payload;
   },
 
   saveProfileData: async (profileData) => {
-    console.log("API SAVE PROFILE DATA CALLED WITH", profileData);
+    //console.log("API SAVE PROFILE DATA CALLED WITH", profileData);
     let token = await getAccessToken();
+    let userId = await getUserId(); //auth user id
+    let imagePath = await uploadProfilePicture(profileData.ProfilePictureURI, userId);
+    profileData.ProfilePicture = imagePath; // Update the profile data with the image path returned from the upload
+    console.log("API SAVE PROFILE DATA AFTER UPLOAD", profileData);
     let response = await fetch(serverRoute("profile_data"), {
       headers: {
         Accept: "*/*",
@@ -224,7 +279,6 @@ const data = {
     let payload = await response.json();
     return payload;
   },
-
 };
 
 const auth = {

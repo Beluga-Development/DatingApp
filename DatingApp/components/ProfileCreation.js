@@ -1,5 +1,5 @@
 //React & Native Imports
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
     Image,
     Text,
@@ -128,12 +128,14 @@ function ProfileCreation() {
                 Gender: profile.gender,
                 Sexuality: profile.sexuality,
                 Occupation: profile.occupation,
-                DateOfBirth: profile.dateOfBirth
+                DateOfBirth: profile.dateOfBirth,
+                ProfilePictureURI: profile.profilePicture
             });
-
+            //Saving interests
             if (profile.interests.length > 0) {
                 await api.data.saveUserInterests(profile.interests.map((i) => i.id));
             }
+
 
             console.log("RESULT OF SAVE PROFILE DATA", result);
             alert("Profile Created!");
@@ -142,6 +144,39 @@ function ProfileCreation() {
             alert("Profile creation failed");
         }
     }
+
+
+    //Gets the profile data from the context and sets it to the profile stat variable on component load.
+    useEffect(() => {
+        const loadProfileData = async () => {
+            try {
+                let data = await api.data.getProfileContext();
+                if (data && data.length > 0) {
+                    const profileData = data[0].profile_data;
+                    setProfile({
+                        firstName: profileData.FirstName || "",
+                        lastName: profileData.LastName || "",
+                        gender: profileData.Gender || "",
+                        sexuality: profileData.Sexuality || "",
+                        occupation: profileData.Occupation || "",
+                        interests: [], // still yours
+                        profilePictureURI: profileData.ProfilePicture || null,
+                        dateOfBirth: profileData.DateOfBirth
+                            ? new Date(profileData.DateOfBirth)
+                            : null
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to load profile data:", error);
+            }
+        };
+        loadProfileData();
+    }, []);
+
+    //UseEffect purely for debugging asynchronous state updates.
+    useEffect(() => {
+        console.log("Profile state updated:", profile);
+    }, [profile]);
 
     return (
         <>
