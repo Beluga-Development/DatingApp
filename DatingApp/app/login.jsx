@@ -26,6 +26,10 @@ useEffect(() => {
     
     if (!token) {
       setLoading(false); // stop loading if not logged in
+    } else {
+        const profileData = await api.data.getCurrentProfileData();
+        setIsProfileComplete(Boolean(profileData?.length > 0));
+        setLoading(false);
     }
   };
 

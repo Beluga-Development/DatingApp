@@ -150,7 +150,7 @@ function ProfileManagement(props) {
 
     //Gets the profile data from the context and sets it to the profile stat variable on component load.
     useEffect(() => {
-        if (!props.creationMode) {
+        if (!props.editMode) {
             const loadProfileData = async () => {
                 try {
                     let data = await api.data.getProfileContext();
@@ -192,7 +192,7 @@ function ProfileManagement(props) {
             >
                 <View id={'Header'}>
                     <Text style={[{marginBottom: 5}, branding.header]}>
-                        {props.creationMode ? "Create Profile" : "Edit Profile"}
+                        {props.editMode ? "Edit Profile" : "Create Profile"}
                     </Text>
                 </View>
                 <Modal
@@ -291,7 +291,7 @@ function ProfileManagement(props) {
                             </TouchableOpacity>
                         </View>
 
-                        {!props.creationMode && (
+                        {!props.editMode && (
                             <>
                                 <View id={'FullNameView'} style={{flexDirection: 'row'}}>
                                     <TitledTextInput title={"First Name"}
@@ -367,7 +367,7 @@ function ProfileManagement(props) {
                             />
                         </View>
                         {/* PlaceHolder Create Profile Button*/}
-                        <Button text={props.creationMode ? "Create Profile" : "Save Changes"} onPress={createProfile} style={{justifyContent: "flex-end"}} />
+                        <Button text={props.editMode ? "Save Changes" : "Create Profile"} onPress={createProfile} style={{justifyContent: "flex-end"}} />
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
