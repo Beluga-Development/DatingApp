@@ -33,7 +33,7 @@ export default function ProfileCreationScreen () {
 
     return (
         <SafeAreaView style={{ flex: 1}}>
-          <ProfileManagement editMode={!isProfileComplete} setIsProfileComplete={setIsProfileComplete} />
+          <ProfileManagement editMode={isProfileComplete} setIsProfileComplete={setIsProfileComplete} />
             <Button title="Log Out" onPress={handleLogout} />
         </SafeAreaView>
     );

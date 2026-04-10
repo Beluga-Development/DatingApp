@@ -37,7 +37,7 @@ export default function ProfileScreen() {
 
   return (
       <View style={{flex: 1, alignItems: "center", justifyContent: "flex-start", marginTop: "10%"}}>
-        <ProfileManagement editMode={!isProfileComplete} setIsProfileComplete={setIsProfileComplete} />
+        <ProfileManagement editMode={isProfileComplete} setIsProfileComplete={setIsProfileComplete} />
       <Button title="Log Out" onPress={handleLogout} />
       {/* <Button title="GET USER DATA TESTING" onPress={getUserData} /> */}
     </View>

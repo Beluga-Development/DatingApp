@@ -150,7 +150,7 @@ function ProfileManagement(props) {
 
     //Gets the profile data from the context and sets it to the profile stat variable on component load.
     useEffect(() => {
-        if (!props.editMode) {
+        if (props.editMode) {
             const loadProfileData = async () => {
                 try {
                     let data = await api.data.getProfileContext();
