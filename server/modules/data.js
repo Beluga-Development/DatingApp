@@ -55,7 +55,7 @@ const getUserProfileData = async (userId) => {
     const {data, error} = await
       db.from("user_data")
       .select("user_id, name, profile_data(*)")
-      .eq("user_id", userId).single();
+      .eq("user_id", userId).maybeSingle();
       return data;
     if (error) console.error(error);
     console.log("CONSOLE LOG OF PROFILE DATA", data);

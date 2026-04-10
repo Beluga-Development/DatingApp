@@ -51,7 +51,8 @@ function ProfileCreation() {
         gender: "",
         sexuality: "",
         occupation: "",
-        interests: [],
+        skills: [],
+        desiredSkills: [],
         profilePicture: null,
         dateOfBirth: new Date()
     });
@@ -59,9 +60,10 @@ function ProfileCreation() {
     const [isGenderOpen, setIsGenderOpen] = useState(false);
     const [isSexualityOpen, setIsSexualityOpen] = useState(false);
 
-    const [interests, setInterests] = useState([]);
+    const [skills, setSkills] = useState([]);
+    const [desiredSkills, setdesiredSkills] = useState([]);
 
-    useEffect(() => {api.data.getAllInterests().then((data) => setInterests(data)).catch((err) => console.error("Failed to load interests:", err));}, []);
+    useEffect(() => { api.data.getAllInterests().then((data) => { setSkills(data); setdesiredSkills(data); }).catch((err) => console.error("Failed to load desiredSkills:", err)); }, []);
 
     const setFirstName = (firstName) => {
         setProfile((prev) => ({...prev, firstName}));
@@ -131,9 +133,9 @@ function ProfileCreation() {
                 DateOfBirth: profile.dateOfBirth,
                 ProfilePictureURI: profile.profilePicture
             });
-            //Saving interests
-            if (profile.interests.length > 0) {
-                await api.data.saveUserInterests(profile.interests.map((i) => i.id));
+            //Saving desiredSkills
+            if (profile.desiredSkills.length > 0) {
+                await api.data.saveUserdesiredSkills(profile.desiredSkills.map((i) => i.id));
             }
 
 
@@ -159,7 +161,8 @@ function ProfileCreation() {
                         gender: profileData.Gender || "",
                         sexuality: profileData.Sexuality || "",
                         occupation: profileData.Occupation || "",
-                        interests: [], // still yours
+                        skills: [],
+                        desiredSkills: [], // still yours
                         profilePictureURI: profileData.ProfilePicture || null,
                         dateOfBirth: profileData.DateOfBirth
                             ? new Date(profileData.DateOfBirth)
@@ -340,13 +343,22 @@ function ProfileCreation() {
                                          style={{width: "100%"}}
                         />
 
+                        <View id={"SkillsView"} >
+                            <ListChipper
+                                title="Skills"
+                                items={profile.skills}
+                                options={skills}
+                                onAdd={(item) => setProfile((prev) => ({ ...prev, skills: [...prev.skills, item] }))}
+                                onRemove={(item) => setProfile((prev) => ({ ...prev, skills: prev.skills.filter((i) => i.id !== item.id) }))}
+                            />
+                        </View>
                         <View id={"InterestView"} >
                             <ListChipper
-                                title="Interests"
-                                items={profile.interests}
-                                options={interests}
-                                onAdd={(item) => setProfile((prev) => ({ ...prev, interests: [...prev.interests, item] }))}
-                                onRemove={(item) => setProfile((prev) => ({ ...prev, interests: prev.interests.filter((i) => i.id !== item.id) }))}
+                                title="Desired Skills"
+                                items={profile.desiredSkills}
+                                options={desiredSkills}
+                                onAdd={(item) => setProfile((prev) => ({ ...prev, desiredSkills: [...prev.desiredSkills, item] }))}
+                                onRemove={(item) => setProfile((prev) => ({ ...prev, desiredSkills: prev.desiredSkills.filter((i) => i.id !== item.id) }))}
                             />
                         </View>
                         {/* PlaceHolder Create Profile Button*/}

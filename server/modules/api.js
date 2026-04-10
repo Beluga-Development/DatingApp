@@ -53,12 +53,18 @@ app.get("/interests", async (req, res) => {
 app.post("/sign_up", async (req, res) => {
   const { email, password } = req.body;
   let result = await signUpUser(email, password);
-  let rowResult;
-  if (result.user) {
-    rowResult = await addUserDataRow(result.user.id);
+
+  if (!result?.user) {
+    return res.send({ message: "Sign up failed. Please try again later." });
   }
+
+  if (result.user.identities?.length === 0) {
+    return res.send({ message: "Email taken" });
+  }
+
+  let rowResult = await addUserDataRow(result.user.id);
   res.send({
-    message: rowResult.id ? "Account created please login" : "Email taken",
+    message: rowResult?.[0]?.id ? "Account created please login" : "Sign up failed",
   });
 });
 
@@ -76,7 +82,7 @@ app.post("/contact_data/:id", requireAuth, async (req, res) => {
   const field_key = req.params.id;
   console.log("Field-key", field_key);
   let result = await getContactData(field_key);
-  res.send(result);
+  res.send(result || { error: "No profile data found" });
 });
 
 app.post("/add_contact/:id/:type/:info", requireAuth, async (req, res) => {
@@ -95,6 +101,7 @@ app.post("/add_match/:idA/:idB", requireAuth, async (req, res) => {
   let result = await addMatch(field_key1, field_key2);
   res.send(result);
 });
+
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -120,7 +127,7 @@ app.post("/get_non_paid_members", requireAuth, async (req, res) => {
 
 app.post("/get_matches_contacted", requireAuth, async (req, res) => {
   let result = await getMatchesThatContacted(req);
-  res.send(result);
+  res.send(result || { error: "No profile data found" });
 });
 
 app.post("/profile_data", requireAuth, async (req, res) => {
