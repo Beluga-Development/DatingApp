@@ -274,9 +274,9 @@ function ProfileManagement(props) {
                                 style={{width: 160, height: 160}}
                                 onPress={() => setShowPfpModal(true)}
                             >
-                                {profile.profilePicture ? (
+                                {profile.profilePictureURI ? (
                                     <Image
-                                        source={{ uri: profile.profilePicture }}
+                                        source={{ uri: profile.profilePictureURI }}
                                         style={branding.profilePicture}
                                     />
                                 ) : (
