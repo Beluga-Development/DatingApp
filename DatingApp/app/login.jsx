@@ -14,6 +14,10 @@ export default function LoginScreen() {
 const handleSetIsLoggedIn = (loggedIn) => {
   setIsLoggedIn(loggedIn);
 };
+const handleSetIsProfileComplete = (profileComplete) => {
+  console.log("Setting profile complete status to:", profileComplete);
+  setIsProfileComplete(profileComplete);
+}
 
 useEffect(() => {
   const checkIfAlreadyLoggedIn = async () => {
@@ -28,25 +32,27 @@ useEffect(() => {
   checkIfAlreadyLoggedIn();
 }, []);
 
-useEffect(() => {
-  if (!isLoggedIn) return;
+// useEffect(() => {
+//   if (!isLoggedIn) return;
 
-  const fetchProfile = async () => {
-    const profileComplete = Boolean(await api.data.getCurrentProfileData());
-    setIsProfileComplete(profileComplete);
-    setLoading(false);
-  };
+//   const fetchProfile = async () => {
+//     const profileComplete = Boolean(await api.data.getCurrentProfileData());
+//     setIsProfileComplete(profileComplete);
+//     //console.log("Profile complete status:", profileComplete);
+//     setLoading(false);
+//   };
 
-  fetchProfile();
-}, [isLoggedIn]);
+//   fetchProfile();
+// }, [isLoggedIn]);
 
 useEffect(() => {
   if (!loading && isLoggedIn) {
+    console.log("Redirecting based on profile completeness:", isProfileComplete);
     router.replace(
       isProfileComplete ? "/(tabs)" : "/profile_creation"
     );
   }
-}, [loading, isLoggedIn, isProfileComplete]);
+}, [loading, isLoggedIn]);
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 16 }}>
@@ -57,7 +63,7 @@ useEffect(() => {
       ) : (
         <Login
           setIsLoggedIn={handleSetIsLoggedIn}
-          setIsProfileComplete={setIsProfileComplete}
+          setIsProfileComplete={handleSetIsProfileComplete}
         />
       )}
     </SafeAreaView>

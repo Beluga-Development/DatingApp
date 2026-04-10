@@ -138,7 +138,7 @@ function ProfileManagement(props) {
                 await api.data.saveUserInterests(profile.desiredSkills.map((i) => i.id));
             }
 
-
+            props.setIsProfileComplete(true);
             console.log("RESULT OF SAVE PROFILE DATA", result);
             alert("Profile Created!");
         } catch(error){
@@ -150,7 +150,7 @@ function ProfileManagement(props) {
 
     //Gets the profile data from the context and sets it to the profile stat variable on component load.
     useEffect(() => {
-        if (props.creationMode) {
+        if (!props.creationMode) {
             const loadProfileData = async () => {
                 try {
                     let data = await api.data.getProfileContext();
@@ -291,7 +291,7 @@ function ProfileManagement(props) {
                             </TouchableOpacity>
                         </View>
 
-                        {props.creationMode && (
+                        {!props.creationMode && (
                             <>
                                 <View id={'FullNameView'} style={{flexDirection: 'row'}}>
                                     <TitledTextInput title={"First Name"}

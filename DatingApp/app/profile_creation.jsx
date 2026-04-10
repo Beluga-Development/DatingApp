@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import { Button, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SessionContext } from "../util/session";
@@ -9,7 +9,9 @@ import ProfileManagement from "../components/ProfileManagement";
 export default function ProfileCreationScreen () {
   const { setIsLoggedIn } = useContext(SessionContext);
   const { isProfileComplete, setIsProfileComplete } = useContext(SessionContext);
-  console.log("Profile Creation Screen - isProfileComplete:", isProfileComplete);
+
+  //console.log("Profile Creation Screen - isProfileComplete:", isProfileComplete);
+
   const handleLogout = async () => {
     await logout();
     router.replace("/login");
@@ -24,10 +26,14 @@ export default function ProfileCreationScreen () {
     }
   };
 
+  useEffect(() => {
+    setIsProfileComplete(Boolean(api.data.getProfileDataContext()));
+  }, []);
+
 
     return (
         <SafeAreaView style={{ flex: 1}}>
-          <ProfileManagement creationMode={!isProfileComplete} />
+          <ProfileManagement creationMode={!isProfileComplete} setIsProfileComplete={setIsProfileComplete} />
             <Button title="Log Out" onPress={handleLogout} />
         </SafeAreaView>
     );

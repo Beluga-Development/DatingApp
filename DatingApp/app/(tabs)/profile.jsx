@@ -8,6 +8,8 @@ import ProfileManagement from "../../components/ProfileManagement"
 
 export default function ProfileScreen() {
   const { setIsLoggedIn } = useContext(SessionContext);
+  const { isProfileComplete, setIsProfileComplete } = useContext(SessionContext);
+  console.log("Profile Screen - isProfileComplete:", isProfileComplete);
   const handleLogout = async () => {
     await logout();
     router.replace("/login");
@@ -35,7 +37,7 @@ export default function ProfileScreen() {
 
   return (
       <View style={{flex: 1, alignItems: "center", justifyContent: "flex-start", marginTop: "10%"}}>
-        <ProfileManagement creationMode={false} />
+        <ProfileManagement creationMode={!isProfileComplete} setIsProfileComplete={setIsProfileComplete} />
       <Button title="Log Out" onPress={handleLogout} />
       {/* <Button title="GET USER DATA TESTING" onPress={getUserData} /> */}
     </View>

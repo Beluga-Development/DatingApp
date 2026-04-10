@@ -245,6 +245,12 @@ const data = {
     return payload;
   },
 
+  getProfileDataContext: async () => {
+    const profileDataString = await getValueFor("profileData");
+    console.log("getProfileDataContext called, profileDataString:", profileDataString);
+    return JSON.parse(profileDataString);
+  },
+
   saveProfileData: async (profileData) => {
     //console.log("API SAVE PROFILE DATA CALLED WITH", profileData);
     let token = await getAccessToken();
