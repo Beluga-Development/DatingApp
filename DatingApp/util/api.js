@@ -261,6 +261,7 @@ const data = {
       method: "POST",
       body: JSON.stringify(profileData),
     });
+    await save("profileData", JSON.stringify(payload));
     let payload = await response.json();
     return payload;
   },
@@ -316,6 +317,7 @@ const auth = {
     });
 
     await deleteValue("session");
+    await deleteValue("profileData");
     return result;
   },
 };

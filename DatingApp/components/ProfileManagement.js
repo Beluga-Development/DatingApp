@@ -40,7 +40,7 @@ const sexualityOptions = [
     "Pansexual",
 ];
 
-function ProfileManagement({ creationMode = true }) {
+function ProfileManagement(props) {
 
     const [showPfpModal, setShowPfpModal] = useState(false);
 
@@ -150,7 +150,7 @@ function ProfileManagement({ creationMode = true }) {
 
     //Gets the profile data from the context and sets it to the profile stat variable on component load.
     useEffect(() => {
-        if (!creationMode) {
+        if (props.creationMode) {
             const loadProfileData = async () => {
                 try {
                     let data = await api.data.getProfileContext();
@@ -164,7 +164,7 @@ function ProfileManagement({ creationMode = true }) {
                             occupation: profileData.Occupation || "",
                             skills: [],
                             desiredSkills: [], // still yours
-                            profilePicture: profileData.ProfilePicture || null,
+                            profilePictureURI: profileData.ProfilePicture || null,
                             dateOfBirth: profileData.DateOfBirth
                                 ? new Date(profileData.DateOfBirth)
                                 : null
@@ -192,7 +192,7 @@ function ProfileManagement({ creationMode = true }) {
             >
                 <View id={'Header'}>
                     <Text style={[{marginBottom: 5}, branding.header]}>
-                        {creationMode ? "Create Profile" : "Edit Profile"}
+                        {props.creationMode ? "Create Profile" : "Edit Profile"}
                     </Text>
                 </View>
                 <Modal
@@ -291,7 +291,7 @@ function ProfileManagement({ creationMode = true }) {
                             </TouchableOpacity>
                         </View>
 
-                        {creationMode && (
+                        {props.creationMode && (
                             <>
                                 <View id={'FullNameView'} style={{flexDirection: 'row'}}>
                                     <TitledTextInput title={"First Name"}
@@ -367,7 +367,7 @@ function ProfileManagement({ creationMode = true }) {
                             />
                         </View>
                         {/* PlaceHolder Create Profile Button*/}
-                        <Button text={creationMode ? "Create Profile" : "Save Changes"} onPress={createProfile} style={{justifyContent: "flex-end"}} />
+                        <Button text={props.creationMode ? "Create Profile" : "Save Changes"} onPress={createProfile} style={{justifyContent: "flex-end"}} />
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
