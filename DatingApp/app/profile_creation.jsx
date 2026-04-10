@@ -4,7 +4,7 @@ import { Button, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SessionContext } from "../util/session";
 import * as api from "../util/api.js";
-import ProfileCreation from "../components/ProfileCreation";
+import ProfileManagement from "../components/ProfileManagement";
 
 export default function ProfileCreationScreen () {
   const { setIsLoggedIn } = useContext(SessionContext);
@@ -24,7 +24,7 @@ export default function ProfileCreationScreen () {
 
     return (
         <SafeAreaView style={{ flex: 1}}>
-            <ProfileCreation/>
+          <ProfileManagement creationMode={true} />
             <Button title="Log Out" onPress={handleLogout} />
         </SafeAreaView>
     );

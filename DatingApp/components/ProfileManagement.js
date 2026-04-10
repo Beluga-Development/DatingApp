@@ -40,7 +40,7 @@ const sexualityOptions = [
     "Pansexual",
 ];
 
-function ProfileCreation() {
+function ProfileManagement({ creationMode = true }) {
 
     const [showPfpModal, setShowPfpModal] = useState(false);
 
@@ -135,7 +135,7 @@ function ProfileCreation() {
             });
             //Saving desiredSkills
             if (profile.desiredSkills.length > 0) {
-                await api.data.saveUserdesiredSkills(profile.desiredSkills.map((i) => i.id));
+                await api.data.saveUserInterests(profile.desiredSkills.map((i) => i.id));
             }
 
 
@@ -150,30 +150,32 @@ function ProfileCreation() {
 
     //Gets the profile data from the context and sets it to the profile stat variable on component load.
     useEffect(() => {
-        const loadProfileData = async () => {
-            try {
-                let data = await api.data.getProfileContext();
-                if (data && data.length > 0) {
-                    const profileData = data[0].profile_data;
-                    setProfile({
-                        firstName: profileData.FirstName || "",
-                        lastName: profileData.LastName || "",
-                        gender: profileData.Gender || "",
-                        sexuality: profileData.Sexuality || "",
-                        occupation: profileData.Occupation || "",
-                        skills: [],
-                        desiredSkills: [], // still yours
-                        profilePictureURI: profileData.ProfilePicture || null,
-                        dateOfBirth: profileData.DateOfBirth
-                            ? new Date(profileData.DateOfBirth)
-                            : null
-                    });
+        if (!creationMode) {
+            const loadProfileData = async () => {
+                try {
+                    let data = await api.data.getProfileContext();
+                    if (data && data.length > 0) {
+                        const profileData = data[0].profile_data;
+                        setProfile({
+                            firstName: profileData.FirstName || "",
+                            lastName: profileData.LastName || "",
+                            gender: profileData.Gender || "",
+                            sexuality: profileData.Sexuality || "",
+                            occupation: profileData.Occupation || "",
+                            skills: [],
+                            desiredSkills: [], // still yours
+                            profilePicture: profileData.ProfilePicture || null,
+                            dateOfBirth: profileData.DateOfBirth
+                                ? new Date(profileData.DateOfBirth)
+                                : null
+                        });
+                    }
+                } catch (error) {
+                    console.error("Failed to load profile data:", error);
                 }
-            } catch (error) {
-                console.error("Failed to load profile data:", error);
-            }
-        };
-        loadProfileData();
+            };
+            loadProfileData();
+        }
     }, []);
 
     //UseEffect purely for debugging asynchronous state updates.
@@ -190,7 +192,7 @@ function ProfileCreation() {
             >
                 <View id={'Header'}>
                     <Text style={[{marginBottom: 5}, branding.header]}>
-                        Create Profile
+                        {creationMode ? "Create Profile" : "Edit Profile"}
                     </Text>
                 </View>
                 <Modal
@@ -289,26 +291,29 @@ function ProfileCreation() {
                             </TouchableOpacity>
                         </View>
 
-                        <View id={'FullNameView'} style={{flexDirection: 'row'}}>
-                            <TitledTextInput title={"First Name"}
-                                             value={profile.firstName}
-                                             onChangeText={setFirstName}
-                                             editable={!isGenderOpen && !isSexualityOpen}
-                                             style={{width: "50%"}}
-                            />
+                        {creationMode && (
+                            <>
+                                <View id={'FullNameView'} style={{flexDirection: 'row'}}>
+                                    <TitledTextInput title={"First Name"}
+                                                     value={profile.firstName}
+                                                     onChangeText={setFirstName}
+                                                     editable={!isGenderOpen && !isSexualityOpen}
+                                                     style={{width: "50%"}}
+                                    />
+                                    <TitledTextInput title={"Last Name"}
+                                                     value={profile.lastName}
+                                                     onChangeText={setLastName}
+                                                     editable={!isGenderOpen && !isSexualityOpen}
+                                                     style={{width: "50%"}}
+                                    />
+                                </View>
 
-                            <TitledTextInput title={"Last Name"}
-                                             value={profile.lastName}
-                                             onChangeText={setLastName}
-                                             editable={!isGenderOpen && !isSexualityOpen}
-                                             style={{width: "50%"}}
-                            />
-                        </View>
-
-                        <View id={'DateOfBirthView'}>
-                            <Text style={[branding.inputTextTitle]}>Date of Birth</Text>
-                            <CalenderInput date={profile.dateOfBirth} onChangeDate={setDateOfBirth}/>
-                        </View>
+                                <View id={'DateOfBirthView'}>
+                                    <Text style={[branding.inputTextTitle]}>Date of Birth</Text>
+                                    <CalenderInput date={profile.dateOfBirth} onChangeDate={setDateOfBirth}/>
+                                </View>
+                            </>
+                        )}
 
                         <View id={'PersonalDatingInfoView'} style={{flexDirection: 'row', zIndex: 1}}>
                             <DropdownSelect
@@ -362,7 +367,7 @@ function ProfileCreation() {
                             />
                         </View>
                         {/* PlaceHolder Create Profile Button*/}
-                        <Button text={"Create Profile"} onPress={createProfile} style={{justifyContent: "flex-end"}}></Button>
+                        <Button text={creationMode ? "Create Profile" : "Save Changes"} onPress={createProfile} style={{justifyContent: "flex-end"}} />
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
@@ -370,4 +375,4 @@ function ProfileCreation() {
     );
 }
 
-export default ProfileCreation;
+export default ProfileManagement;

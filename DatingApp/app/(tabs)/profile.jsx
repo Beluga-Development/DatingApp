@@ -4,7 +4,7 @@ import {Button, View} from "react-native";
 import {SessionContext} from "../../util/session";
 import * as api from "../../util/api.js";
 
-import ProfileCreation from "../../components/ProfileCreation"
+import ProfileManagement from "../../components/ProfileManagement"
 
 export default function ProfileScreen() {
   const { setIsLoggedIn } = useContext(SessionContext);
@@ -35,7 +35,7 @@ export default function ProfileScreen() {
 
   return (
       <View style={{flex: 1, alignItems: "center", justifyContent: "flex-start", marginTop: "10%"}}>
-     <ProfileCreation/>
+        <ProfileManagement creationMode={false} />
       <Button title="Log Out" onPress={handleLogout} />
       {/* <Button title="GET USER DATA TESTING" onPress={getUserData} /> */}
     </View>
