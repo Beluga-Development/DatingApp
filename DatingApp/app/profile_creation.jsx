@@ -27,7 +27,7 @@ export default function ProfileCreationScreen () {
   };
 
   useEffect(() => {
-    setIsProfileComplete(Boolean(api.data.getProfileDataContext()));
+    //setIsProfileComplete(Boolean(api.data.getProfileDataContext()));
   }, []);
 
 

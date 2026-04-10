@@ -137,10 +137,17 @@ function ProfileManagement(props) {
             if (profile.desiredSkills.length > 0) {
                 await api.data.saveUserInterests(profile.desiredSkills.map((i) => i.id));
             }
-
-            props.setIsProfileComplete(true);
-            console.log("RESULT OF SAVE PROFILE DATA", result);
-            alert("Profile Created!");
+            console.log("Result of API call to save profile data:", result);
+            if(result?.message){
+                props.setIsProfileComplete(true);
+                console.log("RESULT OF SAVE PROFILE DATA", result);
+                alert("Profile Created!");
+            }
+            else{
+                props.setIsProfileComplete(false);
+                console.error("Unexpected API response:", result);
+                alert("Profile creation failed");
+            }
         } catch(error){
             console.error("Error creating profile:", error);
             alert("Profile creation failed");
@@ -181,7 +188,8 @@ function ProfileManagement(props) {
     //UseEffect purely for debugging asynchronous state updates.
     useEffect(() => {
         console.log("Profile state updated:", profile);
-    }, [profile]);
+        console.log("Edit mode:", props.editMode);
+    }, [profile], [props.editMode]);
 
     return (
         <>
@@ -291,7 +299,7 @@ function ProfileManagement(props) {
                             </TouchableOpacity>
                         </View>
 
-                        {!props.editMode && (
+                        {props.editMode && (
                             <>
                                 <View id={'FullNameView'} style={{flexDirection: 'row'}}>
                                     <TitledTextInput title={"First Name"}
