@@ -9,7 +9,7 @@ function TitledTextInput({title, value, onChangeText, placeholder, editable, sty
                        onChangeText={onChangeText}
                        placeholder={placeholder}
                        editable={editable}
-                       style={[{marginTop: 0}, branding.inputText]}
+                       style={[{marginTop: 0}, branding.inputText, editable === false && branding.inputDisabled]}
             />
         </View>
     );

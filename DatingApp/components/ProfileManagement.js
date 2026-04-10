@@ -299,29 +299,25 @@ function ProfileManagement(props) {
                             </TouchableOpacity>
                         </View>
 
-                        {props.editMode && (
-                            <>
-                                <View id={'FullNameView'} style={{flexDirection: 'row'}}>
-                                    <TitledTextInput title={"First Name"}
-                                                     value={profile.firstName}
-                                                     onChangeText={setFirstName}
-                                                     editable={!isGenderOpen && !isSexualityOpen}
-                                                     style={{width: "50%"}}
-                                    />
-                                    <TitledTextInput title={"Last Name"}
-                                                     value={profile.lastName}
-                                                     onChangeText={setLastName}
-                                                     editable={!isGenderOpen && !isSexualityOpen}
-                                                     style={{width: "50%"}}
-                                    />
-                                </View>
+                        <View id={'FullNameView'} style={{flexDirection: 'row'}}>
+                            <TitledTextInput title={"First Name"}
+                                             value={profile.firstName}
+                                             onChangeText={setFirstName}
+                                             editable={!props.editMode && !isGenderOpen && !isSexualityOpen}
+                                             style={{width: "50%"}}
+                            />
+                            <TitledTextInput title={"Last Name"}
+                                             value={profile.lastName}
+                                             onChangeText={setLastName}
+                                             editable={!props.editMode && !isGenderOpen && !isSexualityOpen}
+                                             style={{width: "50%"}}
+                            />
+                        </View>
 
-                                <View id={'DateOfBirthView'}>
-                                    <Text style={[branding.inputTextTitle]}>Date of Birth</Text>
-                                    <CalenderInput date={profile.dateOfBirth} onChangeDate={setDateOfBirth}/>
-                                </View>
-                            </>
-                        )}
+                        <View id={'DateOfBirthView'}>
+                            <Text style={[branding.inputTextTitle]}>Date of Birth</Text>
+                            <CalenderInput date={profile.dateOfBirth} onChangeDate={setDateOfBirth} disabled={props.editMode} />
+                        </View>
 
                         <View id={'PersonalDatingInfoView'} style={{flexDirection: 'row', zIndex: 1}}>
                             <DropdownSelect

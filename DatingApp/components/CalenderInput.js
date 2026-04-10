@@ -4,7 +4,7 @@ import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 import branding from "../style.js";
 
-function CalenderInput({date, onChangeDate, style}) {
+function CalenderInput({date, onChangeDate, style, disabled}) {
     const [showDatePicker, setShowDatePicker] = useState(false);
 
     const monthNames = [
@@ -18,12 +18,12 @@ function CalenderInput({date, onChangeDate, style}) {
 
     return (
         <View style={style}>
-            <Pressable onPress={() => setShowDatePicker(true)} style={{flexDirection: 'row'}}>
-                <Text style={[branding.inputDate, {marginTop: 0, marginRight: 2}]}>{`${day}`}</Text>
+            <Pressable onPress={() => { if (!disabled) setShowDatePicker(true); }} style={{flexDirection: 'row'}}>
+                <Text style={[branding.inputDate, {marginTop: 0, marginRight: 2}, disabled && branding.inputDisabled]}>{`${day}`}</Text>
                 <Text style={{fontWeight: "bold", fontSize: 22}}>/</Text>
-                <Text style={[branding.inputDate, {marginTop: 0, marginHorizontal: 2}]}>{`${month}`}</Text>
+                <Text style={[branding.inputDate, {marginTop: 0, marginHorizontal: 2}, disabled && branding.inputDisabled]}>{`${month}`}</Text>
                 <Text style={{fontWeight: "bold", fontSize: 22}}>/</Text>
-                <Text style={[branding.inputDate, {marginTop: 0, marginLeft: 2}]}>{`${year}`}</Text>
+                <Text style={[branding.inputDate, {marginTop: 0, marginLeft: 2}, disabled && branding.inputDisabled]}>{`${year}`}</Text>
             </Pressable>
 
             {showDatePicker && (

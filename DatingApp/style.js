@@ -467,4 +467,7 @@ export default StyleSheet.create({
     textAlign: "center",
     opacity: 0.9,
   },
+  inputDisabled: {
+    backgroundColor: palette.accent,
+  },
 });
