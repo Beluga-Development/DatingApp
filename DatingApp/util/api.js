@@ -46,13 +46,17 @@ const uploadProfilePicture = async (uri, userId) => {
       });
 
     console.log("UPLOAD RESULT:", { data, error });
+    // Get public URL
+    const { data: urlData } = db.storage
+      .from("Profile-Pictures")
+      .getPublicUrl(data.path);
 
     if (error) {
       console.error("UPLOAD ERROR:", error);
       return null;
     }
 
-    return data.path;
+    return urlData.publicUrl;
   } catch (err) {
     console.error("UPLOAD FAILED:", err);
     return null;
