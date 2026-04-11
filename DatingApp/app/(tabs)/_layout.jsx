@@ -23,6 +23,10 @@ export default function TabsLayout(props) {
         name="profile"
         options={{ title: "Profile", headerShown: false }}
       />
+    <Tabs.Screen
+        name="statistics"
+        options={{ title: "Stats", headerShown: false }}
+    />
     </Tabs>
   );
 }
