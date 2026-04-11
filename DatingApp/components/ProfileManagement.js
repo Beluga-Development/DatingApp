@@ -51,6 +51,9 @@ function ProfileManagement(props) {
         gender: "",
         sexuality: "",
         occupation: "",
+        phone: "",
+        email: "",
+        linkedin: "",
         skills: [],
         desiredSkills: [],
         profilePicture: null,
@@ -83,6 +86,18 @@ function ProfileManagement(props) {
 
     const setOccupation = (occupation) => {
         setProfile((prev) => ({...prev, occupation}));
+    };
+
+    const setPhone = (phone) => {
+        setProfile((prev) => ({...prev, phone}));
+    };
+
+    const setEmail = (email) => {
+        setProfile((prev) => ({...prev, email}));
+    };
+
+    const setLinkedin = (linkedin) => {
+        setProfile((prev) => ({...prev, linkedin}));
     };
 
     const setDateOfBirth = (dateOfBirth) => {
@@ -136,6 +151,21 @@ function ProfileManagement(props) {
             //Saving desiredSkills
             if (profile.desiredSkills.length > 0) {
                 await api.data.saveUserInterests(profile.desiredSkills.map((i) => i.id));
+            }
+            if (result?.message) {
+                // Get profile id then save contacts
+                const userData = await api.data.getProfileContext();
+                const profileId = userData?.[0]?.profile_data?.id;
+                if (profileId) {
+                    if (profile.phone)    await api.data.addContact(profileId, "phone",    profile.phone);
+                    if (profile.email)    await api.data.addContact(profileId, "email",    profile.email);
+                    if (profile.linkedin) await api.data.addContact(profileId, "linkedin", profile.linkedin);
+                }
+                props.setIsProfileComplete(true);
+                alert("Profile Created!");
+            } else {
+                props.setIsProfileComplete(false);
+                alert("Profile creation failed");
             }
             console.log("Result of API call to save profile data:", result);
             if(result?.message){
@@ -317,6 +347,24 @@ function ProfileManagement(props) {
                         <View id={'DateOfBirthView'}>
                             <Text style={[branding.inputTextTitle]}>Date of Birth</Text>
                             <CalenderInput date={profile.dateOfBirth} onChangeDate={setDateOfBirth} disabled={props.editMode} />
+                        </View>
+
+                        <View id={'FullNameView'} style={{flexDirection: 'column'}}>
+                            <TitledTextInput title={"Phone Number"}
+                                             value={profile.phone}
+                                             onChangeText={setPhone}
+                                             editable={!props.editMode && !isGenderOpen && !isSexualityOpen}
+                            />
+                            <TitledTextInput title={"Email"}
+                                             value={profile.email}
+                                             onChangeText={setEmail}
+                                             editable={!props.editMode && !isGenderOpen && !isSexualityOpen}
+                            />
+                            <TitledTextInput title={"Linkedin"}
+                                             value={profile.linkedin}
+                                             onChangeText={setLinkedin}
+                                             editable={!props.editMode && !isGenderOpen && !isSexualityOpen}
+                            />
                         </View>
 
                         <View id={'PersonalDatingInfoView'} style={{flexDirection: 'row', zIndex: 1}}>
