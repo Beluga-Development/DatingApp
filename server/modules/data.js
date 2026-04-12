@@ -42,10 +42,10 @@ const getUserData = async (req) => {
     const { data, error } = await db
       .from("user_data")
       .select(`* , profile_data(*)`)
-      .eq("user_id", req.user.id).single();
+      .eq("user_id", req.user.id).maybeSingle();
     if (error || !data) {
       console.error("user_data fetch failed:", error);
-      return res.status(500).json({ error: "Failed to fetch user data" });
+      return error ? { error: error.message } : { error: "User data not found" };
     }
     const { data: interestsData, error: interestsError } = await db
       .from("user_interest")
