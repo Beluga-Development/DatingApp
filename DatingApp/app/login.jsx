@@ -15,7 +15,7 @@ const handleSetIsLoggedIn = (loggedIn) => {
   setIsLoggedIn(loggedIn);
 };
 const handleSetIsProfileComplete = (profileComplete) => {
-  console.log("Setting profile complete status to:", profileComplete);
+  //console.log("Setting profile complete status to:", profileComplete);
   setIsProfileComplete(profileComplete);
 }
 

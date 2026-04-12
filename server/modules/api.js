@@ -10,6 +10,7 @@ import {
   requireAuth,
   saveProfileData,
   saveUserInterests,
+  saveUserDesired,
   signOutUser,
   signUpUser,
   getMatchData,
@@ -35,6 +36,7 @@ app.use((req, _res, next) => {
   console.warn(
     `[${timestamp.toDateString()} ${timestamp.toTimeString()}] / ${timestamp.toISOString()}`,
   );
+  // Log request details for debugging
   console.log(req.method, req.hostname, req.path);
   console.log("headers:", req.headers);
   console.log("query:", req.query);
@@ -81,7 +83,7 @@ app.post("/match_data", requireAuth, async (req, res) => {
 
 app.post("/contact_data/:id", requireAuth, async (req, res) => {
   const field_key = req.params.id;
-  console.log("Field-key", field_key);
+  //console.log("Field-key", field_key);
   let result = await getContactData(field_key);
   res.send(result || { error: "No profile data found" });
 });
@@ -90,7 +92,7 @@ app.post("/add_contact/:id/:type/:info", requireAuth, async (req, res) => {
   const field_key1 = req.params.id;
   const field_key2 = req.params.type;
   const field_key3 = req.params.info;
-  console.log("Field-key", field_key1);
+  //console.log("Field-key", field_key1);
   let result = await addContact(field_key1, field_key2, field_key3);
   res.send(result);
 });
@@ -98,7 +100,7 @@ app.post("/add_contact/:id/:type/:info", requireAuth, async (req, res) => {
 app.post("/add_match/:idA/:idB", requireAuth, async (req, res) => {
   const field_key1 = req.params.idA;
   const field_key2 = req.params.idB;
-  console.log("Field-key", field_key1);
+  //console.log("Field-key", field_key1);
   let result = await addMatch(field_key1, field_key2);
   res.send(result);
 });
@@ -144,6 +146,12 @@ app.post("/user_interests", requireAuth, async (req, res) => {
   const { interests } = req.body;
   const userId = req.user.id;
   let result = await saveUserInterests(interests, userId);
+  res.send(result);
+});
+app.post("/user_desired", requireAuth, async (req, res) => {
+  const { desired } = req.body;
+  const userId = req.user.id;
+  let result = await saveUserDesired(desired, userId);
   res.send(result);
 });
 app.post("/get_stats", requireAuth, async (req, res) => {

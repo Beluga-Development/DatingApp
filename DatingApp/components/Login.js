@@ -55,8 +55,8 @@ function Login({ setIsLoggedIn, setIsProfileComplete }) {
       //console.log("Login result:", result);
       if(result?.session?.access_token){
       let userData = await api.data.getCurrentProfileData();
-      //console.log("Users profile data on login:", userData[0]?.profile_data);
-      let profileData = userData[0]?.profile_data;
+      //console.log("Users profile data on login:", userData?.profile_data);
+      let profileData = userData?.profile_data;
       setIsProfileComplete(Boolean(profileData));
       }
       //This has to be at the bottom because we want to make sure the profile data is fetched and the profile completeness is set before we update the logged in state which will trigger the redirect in the useEffect in the login screen.

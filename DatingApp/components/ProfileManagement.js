@@ -56,7 +56,7 @@ function ProfileManagement(props) {
         linkedin: "",
         skills: [],
         desiredSkills: [],
-        profilePicture: null,
+        profilePictureURI: null,
         dateOfBirth: new Date()
     });
 
@@ -64,9 +64,7 @@ function ProfileManagement(props) {
     const [isSexualityOpen, setIsSexualityOpen] = useState(false);
 
     const [skills, setSkills] = useState([]);
-    const [desiredSkills, setdesiredSkills] = useState([]);
-
-    useEffect(() => { api.data.getAllInterests().then((data) => { setSkills(data); setdesiredSkills(data); }).catch((err) => console.error("Failed to load desiredSkills:", err)); }, []);
+    const [desiredSkills, setDesiredSkills] = useState([]);
 
     const setFirstName = (firstName) => {
         setProfile((prev) => ({...prev, firstName}));
@@ -117,7 +115,7 @@ function ProfileManagement(props) {
             quality: 0.8,
         });
         if (!result.canceled) {
-            setProfile((prev) => ({...prev, profilePicture: result.assets[0].uri}));
+            setProfile((prev) => ({...prev, profilePictureURI: result.assets[0].uri}));
         }
     };
 
@@ -130,7 +128,7 @@ function ProfileManagement(props) {
             quality: 0.8,
         });
         if (!result.canceled) {
-            setProfile((prev) => ({...prev, profilePicture: result.assets[0].uri}));
+            setProfile((prev) => ({...prev, profilePictureURI: result.assets[0].uri}));
         }
     };
 
@@ -146,13 +144,19 @@ function ProfileManagement(props) {
                 Sexuality: profile.sexuality,
                 Occupation: profile.occupation,
                 DateOfBirth: profile.dateOfBirth,
-                ProfilePictureURI: profile.profilePicture
+                ProfilePictureURI: profile.profilePictureURI
             });
             //Saving desiredSkills
             if (profile.desiredSkills.length > 0) {
-                await api.data.saveUserInterests(profile.desiredSkills.map((i) => i.id));
+                console.log("Saving user desired skills:", profile.desiredSkills);
+                await api.data.saveUserDesired(profile.desiredSkills.map((i) => i.id));
             }
-            if (result?.message) {
+            //Saving skills
+            if (profile.skills.length > 0) {
+                console.log("Saving user skills:", profile.skills);
+                await api.data.saveUserInterests(profile.skills.map((i) => i.id));
+            }
+            if (result.length > 0) {
                 // Get profile id then save contacts
                 const userData = await api.data.getProfileContext();
                 const profileId = userData?.[0]?.profile_data?.id;
@@ -162,18 +166,9 @@ function ProfileManagement(props) {
                     if (profile.linkedin) await api.data.addContact(profileId, "linkedin", profile.linkedin);
                 }
                 props.setIsProfileComplete(true);
+                console.log("Result of API call to save profile data:", result);
                 alert("Profile Created!");
             } else {
-                props.setIsProfileComplete(false);
-                alert("Profile creation failed");
-            }
-            console.log("Result of API call to save profile data:", result);
-            if(result?.message){
-                props.setIsProfileComplete(true);
-                console.log("RESULT OF SAVE PROFILE DATA", result);
-                alert("Profile Created!");
-            }
-            else{
                 props.setIsProfileComplete(false);
                 console.error("Unexpected API response:", result);
                 alert("Profile creation failed");
@@ -190,17 +185,31 @@ function ProfileManagement(props) {
         if (props.editMode) {
             const loadProfileData = async () => {
                 try {
+                    const allInterests = await api.data.getAllInterests();
+                    setSkills(allInterests);
+                    setDesiredSkills(allInterests);
                     let data = await api.data.getProfileContext();
-                    if (data && data.length > 0) {
-                        const profileData = data[0].profile_data;
+                    if (data !== null && data !== undefined) {
+                        const profileData = data.profile_data;
+                        const interestsData = data.interestsData || [];
+                        const desiredData = data.desiredData || [];
+                        console.log("Interests data:", interestsData);
+                        console.log("Desired data:", desiredData);
+                        console.log("Profile data fetched for editing:", profileData);
                         setProfile({
                             firstName: profileData.FirstName || "",
                             lastName: profileData.LastName || "",
                             gender: profileData.Gender || "",
                             sexuality: profileData.Sexuality || "",
                             occupation: profileData.Occupation || "",
-                            skills: [],
-                            desiredSkills: [], // still yours
+                            skills: interestsData.map((i) => ({
+                                id: i.interest_id,
+                                name: allInterests.find((s) => s.id === i.interest_id)?.name || "Unknown"
+                            })),
+                            desiredSkills: desiredData.map((i) => ({
+                                id: i.interest_id,
+                                name: allInterests.find((d) => d.id === i.interest_id)?.name || "Unknown"
+                            })),
                             profilePictureURI: profileData.ProfilePicture || null,
                             dateOfBirth: profileData.DateOfBirth
                                 ? new Date(profileData.DateOfBirth)
@@ -213,12 +222,15 @@ function ProfileManagement(props) {
             };
             loadProfileData();
         }
+        else{
+            api.data.getAllInterests().then((data) => { setSkills(data); setdesiredSkills(data); }).catch((err) => console.error("Failed to load desiredSkills:", err));
+        }
     }, []);
 
     //UseEffect purely for debugging asynchronous state updates.
     useEffect(() => {
-        console.log("Profile state updated:", profile);
-        console.log("Edit mode:", props.editMode);
+        //console.log("Profile state updated:", profile);
+        //console.log("Edit mode:", props.editMode);
     }, [profile], [props.editMode]);
 
     return (

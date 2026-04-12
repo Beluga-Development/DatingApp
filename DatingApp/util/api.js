@@ -27,11 +27,11 @@ const getUserId = async () => {
 const uploadProfilePicture = async (uri, userId) => {
   try {
     // 1. Check your supabase client
-    console.log("DB CLIENT:", db);
+    //console.log("DB CLIENT:", db);
     
     // 2. List buckets to confirm connection works
-    const { data: buckets, error: bucketError } = await db.storage.listBuckets();
-    console.log("BUCKETS:", buckets, bucketError);
+    //const { data: buckets, error: bucketError } = await db.storage.listBuckets();
+    //console.log("BUCKETS:", buckets, bucketError);
 
     const fileName = `${userId}-${Date.now()}.jpg`;
 
@@ -45,7 +45,7 @@ const uploadProfilePicture = async (uri, userId) => {
         upsert: true,
       });
 
-    console.log("UPLOAD RESULT:", { data, error });
+    //console.log("UPLOAD RESULT:", { data, error });
     // Get public URL
     const { data: urlData } = db.storage
       .from("Profile-Pictures")
@@ -255,7 +255,7 @@ const data = {
     });
     let payload = await response.json();
     //console.log("profile data payload:", payload);
-    if(payload?.length > 0){
+    if(payload?.profile_data !== null && payload?.profile_data !== undefined){
       //Saves the profile data to the app context for easy access across screens without needing to make multiple API calls. 
       //This is especially useful for the profile screen where we want to display the user's profile data without delay.
       await save("profileData", JSON.stringify(payload));  
@@ -273,9 +273,13 @@ const data = {
     //console.log("API SAVE PROFILE DATA CALLED WITH", profileData);
     let token = await getAccessToken();
     let userId = await getUserId(); //auth user id
-    let imagePath = await uploadProfilePicture(profileData.ProfilePictureURI, userId);
+    const isAlreadyUploaded = profileData.ProfilePictureURI?.startsWith("https://");
+    let imagePath = isAlreadyUploaded
+      ? profileData.ProfilePictureURI
+      : await uploadProfilePicture(profileData.ProfilePictureURI, userId);
+
     profileData.ProfilePicture = imagePath; // Update the profile data with the image path returned from the upload
-    console.log("API SAVE PROFILE DATA AFTER UPLOAD", profileData);
+    //console.log("API SAVE PROFILE DATA AFTER UPLOAD", profileData);
     let response = await fetch(serverRoute("profile_data"), {
       headers: {
         Accept: "*/*",
@@ -285,7 +289,10 @@ const data = {
       method: "POST",
       body: JSON.stringify(profileData),
     });
-    await save("profileData", JSON.stringify(payload));
+    if(payload?.length > 0){
+      //If the profile data was successfully saved to the server, we update the local profile data context with the new data so that it is immediately available across the app without needing to refetch from the server.
+      await save("profileData", JSON.stringify(payload));
+    }
     let payload = await response.json();
     return payload;
   },
@@ -301,9 +308,30 @@ const data = {
       method: "POST",
       body: JSON.stringify({ interests: interestIds }),
     });
+    await save("skills", JSON.stringify(payload)); 
     let payload = await response.json();
     return payload;
   },
+  saveUserDesired: async (desiredIds) => {
+    let token = await getAccessToken();
+    let response = await fetch(serverRoute("user_desired"), {
+      headers: {
+          Accept: "*/*",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        method: "POST",
+        body: JSON.stringify({ desired: desiredIds }),
+      });
+    await save("desired", JSON.stringify(payload)); 
+    let payload = await response.json();
+    return payload;
+  },
+
+
+
+
+
 };
 
 const auth = {

@@ -36,17 +36,36 @@ const requireAuth = async (req, res, next) => {
   }
 };
 
-//Returns data for logged in user, returns user_data + profile_data { profile_data:{} }
+//Returns data for logged in user, returns user_data + profile_data { .., profile_data:{}, desiredData: [], interestData: [] }
 const getUserData = async (req) => {
   try {
     const { data, error } = await db
       .from("user_data")
       .select(`* , profile_data(*)`)
-      .eq("user_id", req.user.id);
+      .eq("user_id", req.user.id).single();
+    if (error || !data) {
+      console.error("user_data fetch failed:", error);
+      return res.status(500).json({ error: "Failed to fetch user data" });
+    }
+    const { data: interestsData, error: interestsError } = await db
+      .from("user_interest")
+      .select("interest_id")
+      .eq("user_id", data.id);
+
+    const { data: desiredData, error: desiredError } = await db
+      .from("user_desired")
+      .select("interest_id")
+      .eq("user_id", data.id);
 
     if (error) console.error(error);
-    console.log("Get User Data: ", data);
-    return data;
+
+    const result = {
+      ...data,
+      interestsData: interestsData ?? [],
+      desiredData: desiredData ?? [],
+    };
+    console.log("Get User Data: ", result);
+    return result;
   } catch (err) {
     console.error(err);
   }
@@ -58,9 +77,9 @@ const getUserProfileData = async (userId) => {
       db.from("user_data")
       .select("user_id, name, profile_data(*)")
       .eq("user_id", userId).maybeSingle();
+      console.log("CONSOLE LOG OF PROFILE DATA", data);
+      if (error) console.error(error);
       return data;
-    if (error) console.error(error);
-    console.log("CONSOLE LOG OF PROFILE DATA", data);
   }
   catch (err) {
     console.error(err);
@@ -410,6 +429,7 @@ const getPaidMembers = async (req) => {
   } catch (err) { console.error(err); return 0; }
 };
 
+//Skills
 const saveUserInterests = async (interestIds, userId) => {
   try {
     await db.auth.refreshSession();
@@ -435,7 +455,40 @@ const saveUserInterests = async (interestIds, userId) => {
         .select();
 
     if (error) console.error(error);
-    console.log("SAVE USER INTERESTS", data);
+    console.log("SAVE USER SKILLS", data);
+    return data;
+  }
+  catch (err) {
+    console.error(err);
+  }
+};
+
+const saveUserDesired = async (interestIds, userId) => {
+  try {
+    await db.auth.refreshSession();
+    const { data: userData, error: userError } = await db
+        .from("user_data")
+        .select("id")
+        .eq("user_id", userId)
+        .single();
+
+    if (userError) {
+      console.error("ERROR FETCHING USER DATA IN SAVE USER DESIRED", userError);
+      return;
+    }
+
+    const rows = interestIds.map((id) => ({
+      user_id: userData.id,
+      interest_id: id
+    }));
+
+    const { data, error } = await db
+        .from("user_desired")
+        .insert(rows)
+        .select();
+
+    if (error) console.error(error);
+    console.log("SAVE USER DESIRED", data);
     return data;
   }
   catch (err) {
@@ -590,7 +643,7 @@ const getStats = async () => {
     getSkillStats(),
   ]);
 
-  console.log("STATS RESULT:", { totalUsers, paidMembers, freeMembers, contactExposedMatches, totalMatches, avgMatchScore, noContactInfo, completeProfiles, totalSkills }); // ← here
+  //console.log("STATS RESULT:", { totalUsers, paidMembers, freeMembers, contactExposedMatches, totalMatches, avgMatchScore, noContactInfo, completeProfiles, totalSkills }); // ← here
 
   return {
     totalUsers,
@@ -624,6 +677,7 @@ export {
   signOutUser,
   saveProfileData,
   saveUserInterests,
+  saveUserDesired,
   getMatchData,
   addMatch,
   addContact,

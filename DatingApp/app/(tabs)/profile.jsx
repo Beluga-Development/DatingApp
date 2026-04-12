@@ -9,7 +9,7 @@ import ProfileManagement from "../../components/ProfileManagement"
 export default function ProfileScreen() {
   const { setIsLoggedIn } = useContext(SessionContext);
   const { isProfileComplete, setIsProfileComplete } = useContext(SessionContext);
-  console.log("Profile Screen - isProfileComplete:", isProfileComplete);
+  //console.log("Profile Screen - isProfileComplete:", isProfileComplete);
   const handleLogout = async () => {
     await logout();
     router.replace("/login");
