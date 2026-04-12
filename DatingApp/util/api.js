@@ -228,6 +228,20 @@ const data = {
     let payload = response.json();
     return payload;
   },
+  getStats: async () => {
+    const token = await getAccessToken();
+    let response = await fetch(serverRoute("get_stats"), {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    let payload = await response.json();
+    return payload;
+  },
+
 
   getCurrentProfileData: async () => {
     let token = await getAccessToken();

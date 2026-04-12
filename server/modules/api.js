@@ -2,6 +2,7 @@
 import express from "express";
 import cors from "cors";
 import {
+  getStats,
   addUserDataRow,
   getAllInterests,
   getUserData,
@@ -144,6 +145,10 @@ app.post("/user_interests", requireAuth, async (req, res) => {
   const userId = req.user.id;
   let result = await saveUserInterests(interests, userId);
   res.send(result);
+});
+app.post("/get_stats", requireAuth, async (req, res) => {
+  let result = await getStats();
+  res.json(result);
 });
 
 // Start the server listening on PORT, then call the callback (second argument)

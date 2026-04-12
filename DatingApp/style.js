@@ -470,4 +470,73 @@ export default StyleSheet.create({
   inputDisabled: {
     backgroundColor: palette.accent,
   },
+  // Stats
+  dashScrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 110,
+  },
+  sectionDividerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 22,
+    marginBottom: 14,
+  },
+  sectionDividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: palette.accent,
+  },
+  sectionDividerTitle: {
+    fontSize: 12,
+    marginHorizontal: 10,
+  },
+  numDisplayRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+    gap: 8,
+  },
+  numDisplayBadge: {
+    backgroundColor: palette.primary,
+    borderRadius: 36,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    minWidth: "25%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  numDisplayBadgeText: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  numDisplay: {
+    backgroundColor: palette.accent,
+    borderRadius: 36,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+
+  },
+  numDisplayText: {
+    fontSize: 15,
+  },
+  titledTextContainer: {
+    marginBottom: 14,
+  },
+  titledTextTitle: {
+    fontSize: 15,
+    marginBottom: 4,
+    marginLeft: 20,
+  },
+  titledText: {
+    backgroundColor: palette.primary,
+    borderRadius: 36,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignSelf: "flex-start",
+  },
+  titledTextText: {
+    fontSize: 15,
+    fontWeight: "bold"
+  },
 });
