@@ -253,7 +253,12 @@ const data = {
       },
       method: "GET",
     });
-    let payload = await response.json();
+    const text = await response.text();
+    if (!text) {
+      console.log("Empty response from server for getCurrentProfileData (likely means user has no profile data)");
+      return null;
+    }
+    let payload = await JSON.parse(text);
     //console.log("profile data payload:", payload);
     if(payload?.profile_data !== null && payload?.profile_data !== undefined){
       //Saves the profile data to the app context for easy access across screens without needing to make multiple API calls. 
