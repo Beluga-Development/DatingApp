@@ -2,6 +2,7 @@
 import express from "express";
 import cors from "cors";
 import {
+  getStats,
   addUserDataRow,
   getAllInterests,
   getUserData,
@@ -118,6 +119,10 @@ app.post("/get_non_paid_members", requireAuth, async (req, res) => {
 app.post("/get_matches_contacted", requireAuth, async (req, res) => {
   let result = await getMatchesThatContacted(req);
   res.send(result);
+});
+app.post("/get_stats", requireAuth, async (req, res) => {
+  let result = await getStats();
+  res.json(result);
 });
 
 // Start the server listening on PORT, then call the callback (second argument)

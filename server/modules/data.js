@@ -13,7 +13,9 @@ const requireAuth = async (req, res, next) => {
 
     const token = authHeader.split(" ")[1];
 
+    console.log("requireAuth - calling getUser");
     const { data, error } = await db.auth.getUser(token);
+    console.log("requireAuth - getUser returned", { error, hasUser: !!data?.user });
 
     if (error || !data?.user) {
       return res.status(401).json({
@@ -335,49 +337,182 @@ const getAllInterests = async () => {
 const getPaidMembers = async (req) => {
   try {
     const { count, error } = await db
-      .from("profile_data")
-      .select("*", { count: "exact" })
-      .eq("isPaid", true);
-
+        .from("profile_data")
+        .select("*", { count: "exact" })
+        .eq("isPaid", true);
     if (error) console.error(error);
-    console.log("PAID MEMBERS", count);
-    return count;
-  } catch (err) {
-    console.error(err);
-  }
+    return count ?? 0;
+  } catch (err) { console.error(err); return 0; }
 };
 
 const getNonPaidMembers = async (req) => {
   try {
     const { count, error } = await db
-      .from("profile_data")
-      .select("*", { count: "exact" })
-      .eq("isPaid", false);
-
+        .from("profile_data")
+        .select("*", { count: "exact" })
+        .eq("isPaid", false);
     if (error) console.error(error);
-    console.log("NON PAID MEMBERS", count);
-    return count;
+    return count ?? 0;
+  } catch (err) { console.error(err); return 0; }
+};
+
+const getAvgMatchScore = async () => {
+  try {
+    const { data, error } = await db.from("matches").select("match_score");
+    if (error) console.error(error);
+    if (!data || data.length === 0) return 0;
+    const avg = data.reduce((sum, m) => sum + m.match_score, 0) / data.length;
+    return Math.round(avg);
   } catch (err) {
     console.error(err);
+    return 0;
+  }
+};
+
+const getUsersWithNoContact = async () => {
+  try {
+    const { data: allProfiles, error: e1 } = await db
+        .from("profile_data")
+        .select("id");
+    const { data: contacts, error: e2 } = await db
+        .from("Contact")
+        .select("user");
+    if (e1 || e2) { console.error(e1 || e2); return 0; }
+    const withContact = new Set(contacts.map((c) => c.user));
+    return allProfiles.filter((p) => !withContact.has(p.id)).length;
+  } catch (err) {
+    console.error(err);
+    return 0;
   }
 };
 
 const getMatchesThatContacted = async (req) => {
   try {
     const { count, error } = await db
-      .from("matches")
-      .select("*", { count: "exact" })
-      .eq("didContact", true);
-
+        .from("matches")
+        .select("*", { count: "exact" })
+        .eq("didContact", true);
     if (error) console.error(error);
-    console.log("DID CONTACT MATCHES", count);
-    return count;
+    return count ?? 0;
+  } catch (err) { console.error(err); return 0; }
+};
+
+
+const getTotalUsers = async () => {
+  try {
+    const { count, error } = await db
+        .from("profile_data")
+        .select("*", { count: "exact", head: true });
+    if (error) console.error(error);
+    return count ?? 0;
+  } catch (err) { console.error(err); return 0; }
+};
+
+const getTotalMatches = async () => {
+  try {
+    const { count, error } = await db
+        .from("matches")
+        .select("*", { count: "exact", head: true });
+    if (error) console.error(error);
+    return Math.floor((count ?? 0) / 2);
+  } catch (err) { console.error(err); return 0; }
+};
+
+const getUsersWithCompleteProfile = async () => {
+  try {
+    const { count, error } = await db
+        .from("profile_data")
+        .select("*", { count: "exact", head: true })
+        .not("FirstName", "is", null)
+        .not("LastName", "is", null)
+        .not("DateOfBirth", "is", null)
+        .not("Gender", "is", null)
+        .not("Occupation", "is", null);
+    if (error) console.error(error);
+    return count ?? 0;
+  } catch (err) { console.error(err); return 0; }
+};
+
+const getTotalSkills = async () => {
+  try {
+    const { count, error } = await db
+        .from("interests")
+        .select("*", { count: "exact", head: true });
+    if (error) console.error(error);
+    return count ?? 0;
+  } catch (err) { console.error(err); return 0; }
+};
+
+const getSkillStats = async () => {
+  try {
+    const { data, error } = await db
+        .from("user_interest")
+        .select("interests(name)");
+    if (error) console.error(error);
+    if (!data || data.length === 0) return { mostCommon: "N/A", mostUnique: "N/A" };
+
+    const counts = {};
+    data.forEach((row) => {
+      const name = row.interests?.name;
+      if (name) counts[name] = (counts[name] || 0) + 1;
+    });
+
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    return {
+      mostCommon: sorted[0]?.[0] ?? "N/A",
+      mostUnique: sorted[sorted.length - 1]?.[0] ?? "N/A",
+    };
   } catch (err) {
     console.error(err);
+    return { mostCommon: "N/A", mostUnique: "N/A" };
   }
 };
 
+const getStats = async () => {
+  const [
+    totalUsers,
+    paidMembers,
+    freeMembers,
+    contactExposedMatches,
+    totalMatches,
+    avgMatchScore,
+    noContactInfo,
+    completeProfiles,
+    totalSkills,
+    skillStats,
+  ] = await Promise.all([
+    getTotalUsers(),
+    getPaidMembers(),
+    getNonPaidMembers(),
+    getMatchesThatContacted(),
+    getTotalMatches(),
+    getAvgMatchScore(),
+    getUsersWithNoContact(),
+    getUsersWithCompleteProfile(),
+    getTotalSkills(),
+    getSkillStats(),
+  ]);
+
+  console.log("STATS RESULT:", { totalUsers, paidMembers, freeMembers, contactExposedMatches, totalMatches, avgMatchScore, noContactInfo, completeProfiles, totalSkills }); // ← here
+
+  return {
+    totalUsers,
+    paidMembers,
+    freeMembers,
+    contactExposedMatches,
+    totalMatches,
+    avgMatchScore,
+    noContactInfo,
+    completeProfiles,
+    totalSkills,
+    mostCommonSkill: skillStats.mostCommon,
+    mostUniqueSkill: skillStats.mostUnique,
+  };
+};
+
+
 export {
+  getStats,
   getMatchesThatContacted,
   getNonPaidMembers,
   getPaidMembers,
