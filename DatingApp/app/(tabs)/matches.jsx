@@ -1,64 +1,85 @@
-import { Text, View } from "react-native";
+import { Text, View, ScrollView, Pressable } from "react-native";
 import { useState, useEffect } from "react";
 import * as api from "../../util/api.js";
-import Button from "../../components/Button";
+import { palette } from "../../style.js";
 
 export default function MatchesScreen() {
   const [matches, setMatches] = useState([]);
 
-  const getMatchData = async () => {
-    try {
-      let result = await api.data.getMatchData();
-      return result;
-    } catch (error) {
-      console.log(`Request failed: ${error.message}`);
-      return [];
-    }
-  };
-
   useEffect(() => {
     const loadMatches = async () => {
-      let result = await getMatchData();
-      setMatches(result);
-      //console.log(result[0].profile_data.contact);
-      //console.log(result[0].profile_data.user_interest);
+      try {
+        let result = await api.data.getMatchData();
+        setMatches(result ?? []);
+      } catch (error) {
+        console.log(`Request failed: ${error.message}`);
+      }
     };
     loadMatches();
   }, []);
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Ranked Matches</Text>
-      <Button text="get matches" onPress={getMatchData} />
-      {matches &&
-        matches.map((match, index) => (
+    <ScrollView contentContainerStyle={{ padding: 20, paddingTop: 60 }}>
+      <Text style={{ fontSize: 22, fontFamily: "Inter", color: "#1a1a1a", fontWeight: "bold", textAlign: "center" }}>
+        Ranked Matches
+      </Text>
+      <View style={{ width: 40, height: 3, backgroundColor: palette.primary, borderRadius: 99, alignSelf: "center", marginTop: 6, marginBottom: 24 }} />
+
+      {matches.map((match, index) => {
+        const profile = match.profile_data;
+        const score = match.match_score ?? 0;
+
+        return (
           <View
             key={index}
             style={{
-              display: "flex",
               flexDirection: "row",
-              marginBottom: 10,
-              padding: 10,
-              borderWidth: 2,
-              borderColor: "#ccc",
-              borderRadius: 20,
+              alignItems: "center",
+              marginBottom: 16,
+              gap: 12,
             }}
           >
-            <View>
-              <Button id="profileButton">
-                <img src="" />
-              </Button>
+            {/* Avatar */}
+            <View style={{
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              backgroundColor: "#ccc",
+              flexShrink: 0,
+            }} />
+
+            {/* Name + bar */}
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 16, fontFamily: "Inter", fontWeight: "bold", color: "#1a1a1a", marginBottom: 6 }}>
+                {profile.FirstName} {profile.LastName}
+              </Text>
+              <View style={{ height: 8, backgroundColor: "#eee", borderRadius: 99 }}>
+                <View style={{
+                  height: 8,
+                  width: `${score}%`,
+                  backgroundColor: palette.primary,
+                  borderRadius: 99,
+                }} />
+              </View>
             </View>
-            <View id="userInfo">
-              <Text
-                style={{ fontWeight: "bold" }}
-              >{`${match.profile_data.FirstName}\n${match.match_score}`}</Text>
-            </View>
-            <View>
-              <Button text="Contact"></Button>
-            </View>
+
+            {/* Contact button */}
+            <Pressable
+              style={({ pressed }) => ({
+                backgroundColor: "#1a1a1a",
+                borderRadius: 24,
+                paddingVertical: 10,
+                paddingHorizontal: 16,
+                opacity: pressed ? 0.8 : 1,
+                flexShrink: 0,
+              })}
+              onPress={() => console.log("Contact", profile.FirstName)}
+            >
+              <Text style={{ color: "#fff", fontSize: 14, fontFamily: "Inter" }}>Contact</Text>
+            </Pressable>
           </View>
-        ))}
-    </View>
+        );
+      })}
+    </ScrollView>
   );
 }
