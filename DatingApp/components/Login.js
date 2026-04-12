@@ -52,7 +52,7 @@ function Login({ setIsLoggedIn, setIsProfileComplete }) {
       let result = await api.auth.loginUser(email, password);
       setIsError(false);
       setConfirmation(result.message);
-      //console.log("Login result:", result);
+      console.log("Login result:", result);
       if(result?.session?.access_token){
       let userData = await api.data.getCurrentProfileData();
       //console.log("Users profile data on login:", userData?.profile_data);

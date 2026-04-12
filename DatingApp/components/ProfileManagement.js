@@ -223,7 +223,7 @@ function ProfileManagement(props) {
             loadProfileData();
         }
         else{
-            api.data.getAllInterests().then((data) => { setSkills(data); setdesiredSkills(data); }).catch((err) => console.error("Failed to load desiredSkills:", err));
+            api.data.getAllInterests().then((data) => { setSkills(data); setDesiredSkills(data); }).catch((err) => console.error("Failed to load desiredSkills:", err));
         }
     }, []);
 

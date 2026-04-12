@@ -443,16 +443,26 @@ const saveUserInterests = async (interestIds, userId) => {
       console.error("ERROR FETCHING USER DATA IN SAVE USER INTERESTS", userError);
       return;
     }
+    console.log("INTEREST IDS?", interestIds);
+    const ids = interestIds.map((i) => (typeof i === "object" ? i.id : i));
 
-    const rows = interestIds.map((id) => ({
+    const rows = ids.map((id) => ({
       user_id: userData.id,
-      interest_id: id
+      interest_id: id,
     }));
 
+    // Delete interests that are no longer in the list
+    const { error: deleteError } = await db
+    .from("user_interest")
+    .delete()
+    .eq("user_id", userData.id)
+    .not("interest_id", "in", `(${interestIds.join(",")})`);
+
+    // Insert new ones (only those that don't already exist)
     const { data, error } = await db
-        .from("user_interest")
-        .insert(rows)
-        .select();
+    .from("user_interest")
+    .upsert(rows, { onConflict: "user_id,interest_id" })
+    .select();
 
     if (error) console.error(error);
     console.log("SAVE USER SKILLS", data);
@@ -476,16 +486,25 @@ const saveUserDesired = async (interestIds, userId) => {
       console.error("ERROR FETCHING USER DATA IN SAVE USER DESIRED", userError);
       return;
     }
+    const ids = interestIds.map((i) => (typeof i === "object" ? i.id : i));
 
-    const rows = interestIds.map((id) => ({
+    const rows = ids.map((id) => ({
       user_id: userData.id,
-      interest_id: id
+      interest_id: id,
     }));
 
+    // Delete interests that are no longer in the list
+    const { error: deleteError } = await db
+    .from("user_desired")
+    .delete()
+    .eq("user_id", userData.id)
+    .not("interest_id", "in", `(${interestIds.join(",")})`);
+
+    // Insert new ones (only those that don't already exist)
     const { data, error } = await db
-        .from("user_desired")
-        .insert(rows)
-        .select();
+    .from("user_desired")
+    .upsert(rows, { onConflict: "user_id,interest_id" })
+    .select();
 
     if (error) console.error(error);
     console.log("SAVE USER DESIRED", data);

@@ -308,8 +308,12 @@ const data = {
       method: "POST",
       body: JSON.stringify({ interests: interestIds }),
     });
-    await save("skills", JSON.stringify(payload)); 
-    let payload = await response.json();
+    const text = await response.text();
+    if (!text) {
+      console.log("Empty response from server for saveUserInterests (likely means it updated nothing)");
+      return payload;
+    }
+    let payload = await JSON.parse(text);
     return payload;
   },
   saveUserDesired: async (desiredIds) => {
@@ -323,8 +327,12 @@ const data = {
         method: "POST",
         body: JSON.stringify({ desired: desiredIds }),
       });
-    await save("desired", JSON.stringify(payload)); 
-    let payload = await response.json();
+    const text = await response.text();
+    if (!text) {
+      console.log("Empty response from server for saveUserDesired (likely means it updated nothing)");
+      return payload;
+    }
+    let payload = await JSON.parse(text);
     return payload;
   },
 
@@ -370,6 +378,8 @@ const auth = {
 
     await deleteValue("session");
     await deleteValue("profileData");
+    await deleteValue("skills");
+    await deleteValue("desired");
     return result;
   },
 };
