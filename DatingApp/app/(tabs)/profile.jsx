@@ -46,6 +46,7 @@ export default function ProfileScreen() {
       <ProfileManagement
         editMode={isProfileComplete}
         setIsProfileComplete={setIsProfileComplete}
+        onLogout={handleLogout}
       />
       {/* <Button title="GET USER DATA TESTING" onPress={getUserData} /> */}
     </View>

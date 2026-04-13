@@ -269,15 +269,18 @@ function ProfileManagement(props) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={10}
       >
-        <View id={"Header"} style={{ display: "flex" }}>
-          <Text style={[{ marginBottom: 5 }, branding.header]}>
+        <View id={'Header'} style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginHorizontal: 10}}>
+          <Text style={[{marginBottom: 5}, branding.header]}>
             {props.editMode ? "Edit Profile" : "Create Profile"}
           </Text>
-          <Button
-            text={"Log out"}
-            onPress={() => {}}
-            style={{ width: "30%", fontSize: 12, padding: 2 }}
-          />
+          {props.onLogout && (
+              <TouchableOpacity
+                  onPress={props.onLogout}
+                  style={{position: 'absolute', right: 0, padding: 8, backgroundColor: palette.black, borderRadius: 36, marginBottom: 30}}
+              >
+                <Text style={{color: palette.white, fontSize: 14, fontWeight: "bold"}}>Log Out</Text>
+              </TouchableOpacity>
+          )}
         </View>
         <Modal
           visible={showPfpModal}
