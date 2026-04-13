@@ -301,10 +301,6 @@ const data = {
       method: "POST",
       body: JSON.stringify(profileData),
     });
-    if(payload?.length > 0){
-      //If the profile data was successfully saved to the server, we update the local profile data context with the new data so that it is immediately available across the app without needing to refetch from the server.
-      await save("profileData", JSON.stringify(payload));
-    }
     let payload = await response.json();
     return payload;
   },

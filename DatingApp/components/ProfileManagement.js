@@ -44,6 +44,8 @@ const sexualityOptions = [
 function ProfileManagement(props) {
 
     const [showPfpModal, setShowPfpModal] = useState(false);
+    const [reloadProfileData, setReloadProfileData] = useState(false); // State variable to trigger profile data reload after saving
+    const reloadPage = () => setReloadProfileData(prev => !prev); // toggle to trigger useEffect
 
     //State Variables for the profile creation form
     const [profile, setProfile] = useState({
@@ -166,6 +168,7 @@ function ProfileManagement(props) {
                 console.log("Result of API call to save profile data:", result);
                 alert("Profile Created!");
                 if(!props.editMode){
+                    reloadPage(); // Trigger profile data reload in useEffect
                     router.replace("/(tabs)");
                 }
             } else {
@@ -188,10 +191,11 @@ function ProfileManagement(props) {
                     const allInterests = await api.data.getAllInterests();
                     setSkills(allInterests);
                     setDesiredSkills(allInterests);
-                    const [data, contactData] = await Promise.all([api.data.getProfileContext(), api.data.getContactData(),]);
+                    const [data, contactData] = await Promise.all([api.data.getCurrentProfileData(), api.data.getContactData(),]);
 
                     if (data !== null && data !== undefined) {
-                        const profileData = data.profile_data;
+                        console.log("Profile data fetched for editing:", data);
+                        const profileData = data.profile_data || {};
                         const interestsData = data.interestsData || [];
                         const desiredData = data.desiredData || [];
                         console.log("Interests data:", interestsData);
@@ -231,7 +235,7 @@ function ProfileManagement(props) {
         else{
             api.data.getAllInterests().then((data) => { setSkills(data); setDesiredSkills(data); }).catch((err) => console.error("Failed to load desiredSkills:", err));
         }
-    }, []);
+    }, [props.editMode, reloadProfileData]);
 
     //UseEffect purely for debugging asynchronous state updates.
     useEffect(() => {
