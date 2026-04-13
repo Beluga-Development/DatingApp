@@ -6,9 +6,10 @@ import { SessionContext } from "../util/session";
 import * as api from "../util/api.js";
 import ProfileManagement from "../components/ProfileManagement";
 
-export default function ProfileCreationScreen () {
+export default function ProfileCreationScreen() {
   const { setIsLoggedIn } = useContext(SessionContext);
-  const { isProfileComplete, setIsProfileComplete } = useContext(SessionContext);
+  const { isProfileComplete, setIsProfileComplete } =
+    useContext(SessionContext);
 
   //console.log("Profile Creation Screen - isProfileComplete:", isProfileComplete);
 
@@ -30,11 +31,13 @@ export default function ProfileCreationScreen () {
     //setIsProfileComplete(Boolean(api.data.getProfileDataContext()));
   }, []);
 
-
-    return (
-        <SafeAreaView style={{ flex: 1}}>
-          <ProfileManagement editMode={isProfileComplete} setIsProfileComplete={setIsProfileComplete} />
-            <Button title="Log Out" onPress={handleLogout} />
-        </SafeAreaView>
-    );
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <ProfileManagement
+        editMode={isProfileComplete}
+        setIsProfileComplete={setIsProfileComplete}
+      />
+      <Button title="Log Out" onPress={handleLogout} />
+    </SafeAreaView>
+  );
 }
