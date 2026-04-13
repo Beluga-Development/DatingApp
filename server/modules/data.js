@@ -236,6 +236,130 @@ const getMatchData = async (req) => {
   }
 };
 
+const generateMatches = async (req) => {
+  try {
+    // 1. Get current user's user_data id and profile_data id
+    const { data: userData, error: userError } = await db
+      .from("user_data")
+      .select("id, profile_data(id, Gender, Sexuality)")
+      .eq("user_id", req.user.id)
+      .single();
+
+    if (userError || !userData?.profile_data) {
+      console.error("No profile found for user", userError);
+      return { message: "No profile found" };
+    }
+
+    const myUserDataId = userData.id;
+    const myProfileId = userData.profile_data.id;
+    const myGender = userData.profile_data.Gender;
+    const mySexuality = userData.profile_data.Sexuality;
+
+
+    
+    // 2. Get current user's desired skills
+    const { data: myDesired, error: desiredError } = await db
+      .from("user_desired")
+      .select("interest_id")
+      .eq("user_id", myUserDataId);
+
+    if (desiredError || !myDesired?.length) {
+      console.error("No desired skills found", desiredError);
+      return { message: "No desired skills set" };
+    }
+
+    const myDesiredIds = myDesired.map(d => d.interest_id);
+
+    
+    // 3. Get all other users' skills, excluding self
+    const { data: allUserSkills, error: skillsError } = await db
+      .from("user_interest")
+      .select("user_id, interest_id")
+      .neq("user_id", myUserDataId);
+
+    if (skillsError) console.error(skillsError);
+
+    // 4. Group skills by user_id
+    const skillsByUser = {};
+    for (const row of allUserSkills ?? []) {
+      if (!skillsByUser[row.user_id]) skillsByUser[row.user_id] = [];
+      skillsByUser[row.user_id].push(row.interest_id);
+    }
+
+    // 5. Get profile_data including gender/sexuality for compatibility check
+    const userDataIds = Object.keys(skillsByUser).map(Number);
+    const { data: profiles, error: profileError } = await db
+      .from("profile_data")
+      .select("id, fk_user_data, Gender, Sexuality")
+      .in("fk_user_data", userDataIds);
+
+    if (profileError) console.error(profileError);
+
+    console.log("My gender:", myGender, "My sexuality:", mySexuality);
+    console.log("My desired IDs:", myDesiredIds);
+    console.log("All user skills:", allUserSkills);
+    console.log("Profiles found:", profiles);
+    // 6. Score and filter
+    const scored = userDataIds
+      .map(userDataId => {
+        const profile = profiles?.find(p => p.fk_user_data === userDataId);
+        if (!profile) return null;
+
+        const theirGender = profile.Gender;
+        const theirSexuality = profile.Sexuality;
+        const normalize = (s) => s === "Straight" ? "Heterosexual" : s;
+
+        const myNormalizedSexuality = normalize(mySexuality);
+
+        const iLikeTheirGender =
+          myNormalizedSexuality === "Bisexual" || myNormalizedSexuality === "Pansexual" ? true
+          : myNormalizedSexuality === "Heterosexual" ? myGender !== theirGender
+          : myNormalizedSexuality === "Homosexual" ? myGender === theirGender
+          : false;
+
+        const theyLikeMyGender =
+          normalize(theirSexuality) === "Bisexual" || normalize(theirSexuality) === "Pansexual" ? true
+          : normalize(theirSexuality) === "Heterosexual" ? theirGender !== myGender
+          : normalize(theirSexuality) === "Homosexual" ? theirGender === myGender
+          : false;
+  if (!iLikeTheirGender || !theyLikeMyGender) return null;
+
+        const theirSkills = skillsByUser[userDataId] ?? [];
+        const overlap = myDesiredIds.filter(id => theirSkills.includes(id)).length;
+        const score = Math.round((overlap / myDesiredIds.length) * 100);
+
+        return { profileId: profile.id, score };
+      })
+      .filter(p => p !== null && p.score > 0);
+
+    // 7. Delete existing matches
+    const { error: deleteError } = await db
+      .from("matches")
+      .delete()
+      .eq("user1", myProfileId);
+
+    if (deleteError) console.error("Delete error:", deleteError);
+
+    // 8. Insert new matches
+    if (scored.length > 0) {
+      const { error: insertError } = await db.from("matches").insert(
+        scored.map(p => ({
+          user1: myProfileId,
+          user2: p.profileId,
+          match_score: p.score,
+        }))
+      );
+      if (insertError) console.error("Insert error:", insertError);
+    }
+
+    console.log(`Generated ${scored.length} matches for profile ${myProfileId}`);
+    return { message: `${scored.length} matches generated` };
+  } catch (err) {
+    console.error(err);
+    return { message: "Failed to generate matches" };
+  }
+};
+
 const addMatch = async (idA, idB) => {
   try {
     const { data, error } = await db.from("matches").insert([
@@ -714,6 +838,7 @@ export {
   getUserData,
   getUserProfileData,
   signUpUser,
+  generateMatches,
   getCurrentUser,
   addUserDataRow,
   loginUser,

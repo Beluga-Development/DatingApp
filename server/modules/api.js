@@ -10,6 +10,7 @@ import {
   requireAuth,
   saveProfileData,
   saveUserInterests,
+  generateMatches,
   saveUserDesired,
   signOutUser,
   signUpUser,
@@ -81,6 +82,10 @@ app.post("/match_data", requireAuth, async (req, res) => {
   res.send(result);
 });
 
+app.post("/generate_matches", requireAuth, async (req, res) => {
+  let result = await generateMatches(req);
+  res.json(result);
+});
 app.get("/contact_data", requireAuth, async (req, res) => {
   const userId = req.user.id;
   //console.log("Field-key", field_key);
