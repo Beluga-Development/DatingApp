@@ -119,6 +119,18 @@ const data = {
     return payload;
   },
 
+  generateMatches: async () => {
+  const token = await getAccessToken();
+  let response = await fetch(serverRoute("generate_matches"), {
+    method: "POST",
+    headers: {
+      Accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return await response.json();
+},
   addMatch: async (userA, userB) => {
     const token = await getAccessToken();
     let response = await fetch(
