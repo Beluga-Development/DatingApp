@@ -280,12 +280,17 @@ const data = {
     //console.log("API SAVE PROFILE DATA CALLED WITH", profileData);
     let token = await getAccessToken();
     let userId = await getUserId(); //auth user id
+    if(profileData.ProfilePictureURI){
     const isAlreadyUploaded = profileData.ProfilePictureURI?.startsWith("https://");
     let imagePath = isAlreadyUploaded
       ? profileData.ProfilePictureURI
       : await uploadProfilePicture(profileData.ProfilePictureURI, userId);
 
     profileData.ProfilePicture = imagePath; // Update the profile data with the image path returned from the upload
+    }
+    else{
+      profileData.ProfilePicture = null; // Handle case where no profile picture is provided
+    }
     //console.log("API SAVE PROFILE DATA AFTER UPLOAD", profileData);
     let response = await fetch(serverRoute("profile_data"), {
       headers: {

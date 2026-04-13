@@ -29,7 +29,7 @@ useEffect(() => {
     } else {
         const profileData = await api.data.getCurrentProfileData();
         console.log("Profile data on login check:", profileData.profile_data);
-        setIsProfileComplete(Boolean(profileData.profile_data.FirstName)); // Assuming profile is complete if FirstName exists
+        setIsProfileComplete(Boolean(profileData.profile_data)); // Assuming profile is complete if FirstName exists
         setLoading(false);
     }
   };

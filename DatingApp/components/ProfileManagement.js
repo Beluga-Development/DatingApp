@@ -165,7 +165,9 @@ function ProfileManagement(props) {
                 props.setIsProfileComplete(true);
                 console.log("Result of API call to save profile data:", result);
                 alert("Profile Created!");
-                router.replace("/(tabs)/profile");
+                if(!props.editMode){
+                    router.replace("/(tabs)");
+                }
             } else {
                 props.setIsProfileComplete(false);
                 console.error("Unexpected API response:", result);
