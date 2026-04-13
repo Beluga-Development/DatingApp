@@ -81,20 +81,19 @@ app.post("/match_data", requireAuth, async (req, res) => {
   res.send(result);
 });
 
-app.post("/contact_data/:id", requireAuth, async (req, res) => {
-  const field_key = req.params.id;
+app.get("/contact_data", requireAuth, async (req, res) => {
+  const userId = req.user.id;
   //console.log("Field-key", field_key);
-  let result = await getContactData(field_key);
-  res.send(result || { error: "No profile data found" });
+  let result = await getContactData(userId);
+  res.json(result || { error: "No profile data found" });
 });
 
-app.post("/add_contact/:id/:type/:info", requireAuth, async (req, res) => {
-  const field_key1 = req.params.id;
-  const field_key2 = req.params.type;
-  const field_key3 = req.params.info;
-  //console.log("Field-key", field_key1);
-  let result = await addContact(field_key1, field_key2, field_key3);
-  res.send(result);
+app.post("/add_contact", requireAuth, async (req, res) => {
+  let userId = req.user.id;
+  let type = req.body.type;
+  let info = req.body.info;
+  let result = await addContact(userId, type, info);
+  res.json(result || { error: "Failed to add contact data" });
 });
 
 app.post("/add_match/:idA/:idB", requireAuth, async (req, res) => {

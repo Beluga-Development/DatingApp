@@ -137,12 +137,14 @@ const data = {
     return payload;
   },
 
-  addContact: async (user, type, info) => {
+  addContact: async (type, info) => {
+    console.log("API addContact called with", { type, info });
     const token = await getAccessToken();
     let response = await fetch(
-      serverRoute("add_contact/" + user + "/" + type + "/" + info),
+      serverRoute("add_contact"),
       {
         method: "POST",
+        body: JSON.stringify({ type, info }),
         headers: {
           Accept: "*/*",
           "Content-Type": "application/json",
@@ -155,10 +157,10 @@ const data = {
     return payload;
   },
 
-  getContactData: async (user) => {
+  getContactData: async () => {
     const token = await getAccessToken();
-    let response = await fetch(serverRoute("get_contact/" + user), {
-      method: "POST",
+    let response = await fetch(serverRoute("contact_data"), {
+      method: "GET",
       headers: {
         Accept: "*/*",
         "Content-Type": "application/json",

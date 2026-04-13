@@ -251,25 +251,51 @@ const addMatch = async (idA, idB) => {
   }
 };
 
-const addContact = async (id, _type, _info) => {
+const addContact = async (userId, type, info) => {
   try {
+    await db.auth.refreshSession();
+    const { data: userData, error: userError } = await db
+      .from("user_data")
+      .select("*, profile_data(id)")
+      .eq('user_id', userId)  //This is the auth user id, we need to get the corresponding user_data row to link to profile_data
+      .maybeSingle();
+
+    if (userError || !userData) {
+      console.error("ERROR FETCHING USER DATA IN ADD CONTACT", userError);
+      return;
+    }
+
     const { data, error } = await db
-      .from("contact")
-      .insert({ user: id, type: _type, info: _info });
+      .from("Contact")
+      .insert({ user: userData.profile_data.id, type: type, info: info })
+      .select();
+    
     if (error) console.error(error);
     console.log("add contact data: ", data);
     return data;
+
   } catch (err) {
     console.error(err);
   }
 };
 
-const getContactData = async (id) => {
+const getContactData = async (userId) => {
   try {
+    await db.auth.refreshSession();
+    const { data: userData, error: userError } = await db
+    .from("user_data")
+    .select("*, profile_data(id)")
+    .eq("user_id", userId)
+    .single();
+
+    if (userError || !userData) {
+      console.error("ERROR FETCHING USER DATA IN GET CONTACT DATA", userError);
+      return;
+    }
     const { data, error } = await db
-      .from("contact")
+      .from("Contact")
       .select("type, info")
-      .eq("user", id);
+      .eq("user", userData.profile_data.id);
 
     if (error) console.error(error);
     console.log("get contact data: ", data);
@@ -382,10 +408,6 @@ const getAllInterests = async () => {
 
 const saveProfileData = async (profileData, userId) => {
   try {
-    // const {data: testUserData, error: testUserError} = await db
-    // .from("user_data")
-    // .select("id")
-    //*userId is being passed properly but userData is not being found for some reason
     await db.auth.refreshSession();
     const { data: userData, error: userError } = await db
     .from("user_data")

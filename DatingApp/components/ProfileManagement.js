@@ -25,6 +25,7 @@ import * as api from "../util/api.js";
 //Style Imports
 import branding, { palette} from "../style.js";
 import ListChipper from "./ListChipper";
+import { router } from "expo-router";
 
 const genderOptions = [
     "Male",
@@ -157,17 +158,14 @@ function ProfileManagement(props) {
                 await api.data.saveUserInterests(profile.skills.map((i) => i.id));
             }
             if (result.length > 0) {
-                // Get profile id then save contacts
-                const userData = await api.data.getProfileContext();
-                const profileId = userData?.[0]?.profile_data?.id;
-                if (profileId) {
-                    if (profile.phone)    await api.data.addContact(profileId, "phone",    profile.phone);
-                    if (profile.email)    await api.data.addContact(profileId, "email",    profile.email);
-                    if (profile.linkedin) await api.data.addContact(profileId, "linkedin", profile.linkedin);
-                }
+                console.log("profile contact INFO: ", profile.phone, profile.email, profile.linkedin);
+                if (profile.phone)    await api.data.addContact( "phone",    profile.phone);
+                if (profile.email)    await api.data.addContact( "email",    profile.email);
+                if (profile.linkedin) await api.data.addContact( "linkedin", profile.linkedin);
                 props.setIsProfileComplete(true);
                 console.log("Result of API call to save profile data:", result);
                 alert("Profile Created!");
+                router.replace("/(tabs)/profile");
             } else {
                 props.setIsProfileComplete(false);
                 console.error("Unexpected API response:", result);
@@ -365,17 +363,17 @@ function ProfileManagement(props) {
                             <TitledTextInput title={"Phone Number"}
                                              value={profile.phone}
                                              onChangeText={setPhone}
-                                             editable={!props.editMode && !isGenderOpen && !isSexualityOpen}
+                                             editable={!isGenderOpen && !isSexualityOpen}
                             />
                             <TitledTextInput title={"Email"}
                                              value={profile.email}
                                              onChangeText={setEmail}
-                                             editable={!props.editMode && !isGenderOpen && !isSexualityOpen}
+                                             editable={!isGenderOpen && !isSexualityOpen}
                             />
                             <TitledTextInput title={"Linkedin"}
                                              value={profile.linkedin}
                                              onChangeText={setLinkedin}
-                                             editable={!props.editMode && !isGenderOpen && !isSexualityOpen}
+                                             editable={!isGenderOpen && !isSexualityOpen}
                             />
                         </View>
 
