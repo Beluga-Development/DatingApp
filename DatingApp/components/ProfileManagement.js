@@ -186,7 +186,8 @@ function ProfileManagement(props) {
                     const allInterests = await api.data.getAllInterests();
                     setSkills(allInterests);
                     setDesiredSkills(allInterests);
-                    let data = await api.data.getProfileContext();
+                    const [data, contactData] = await Promise.all([api.data.getProfileContext(), api.data.getContactData(),]);
+
                     if (data !== null && data !== undefined) {
                         const profileData = data.profile_data;
                         const interestsData = data.interestsData || [];
@@ -194,12 +195,17 @@ function ProfileManagement(props) {
                         console.log("Interests data:", interestsData);
                         console.log("Desired data:", desiredData);
                         console.log("Profile data fetched for editing:", profileData);
+
+                        const contacts = contactData || [];
                         setProfile({
                             firstName: profileData.FirstName || "",
                             lastName: profileData.LastName || "",
                             gender: profileData.Gender || "",
                             sexuality: profileData.Sexuality || "",
                             occupation: profileData.Occupation || "",
+                            phone: contacts.find((c) => c.type === "phone")?.info || "",
+                            email: contacts.find((c) => c.type === "email")?.info || "",
+                            linkedin: contacts.find((c) => c.type === "linkedin")?.info || "",
                             skills: interestsData.map((i) => ({
                                 id: i.interest_id,
                                 name: allInterests.find((s) => s.id === i.interest_id)?.name || "Unknown"
