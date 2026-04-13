@@ -21,11 +21,12 @@
 - Auth flow with Bearer token middleware (`requireAuth`) on protected endpoints
 - Client login/signup/logout via `DatingApp/util/api.js` and session in local storage
 - Contact data management via server API
+- Profile Creation input screen + backend
+- Statistics page
 
 ## In progress
 
-- Profile Creation input screen + backend
-- Statistics page
+
 
 ## Dependencies to install
 
