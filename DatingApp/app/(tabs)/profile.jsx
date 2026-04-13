@@ -1,14 +1,15 @@
-import {router} from "expo-router";
-import {useContext, useState} from "react";
-import {Button, View} from "react-native";
-import {SessionContext} from "../../util/session";
+import { router } from "expo-router";
+import { useContext, useState } from "react";
+import { Button, View } from "react-native";
+import { SessionContext } from "../../util/session";
 import * as api from "../../util/api.js";
 
-import ProfileManagement from "../../components/ProfileManagement"
+import ProfileManagement from "../../components/ProfileManagement";
 
 export default function ProfileScreen() {
   const { setIsLoggedIn } = useContext(SessionContext);
-  const { isProfileComplete, setIsProfileComplete } = useContext(SessionContext);
+  const { isProfileComplete, setIsProfileComplete } =
+    useContext(SessionContext);
   //console.log("Profile Screen - isProfileComplete:", isProfileComplete);
   const handleLogout = async () => {
     await logout();
@@ -33,12 +34,20 @@ export default function ProfileScreen() {
   //   }
   // };
 
- 
-
   return (
-      <View style={{flex: 1, alignItems: "center", justifyContent: "flex-start", marginTop: "10%"}}>
-        <ProfileManagement editMode={isProfileComplete} setIsProfileComplete={setIsProfileComplete} />
-      <Button title="Log Out" onPress={handleLogout} />
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "flex-start",
+        marginTop: "10%",
+      }}
+    >
+      <ProfileManagement
+        editMode={isProfileComplete}
+        setIsProfileComplete={setIsProfileComplete}
+        onLogout={handleLogout}
+      />
       {/* <Button title="GET USER DATA TESTING" onPress={getUserData} /> */}
     </View>
   );
