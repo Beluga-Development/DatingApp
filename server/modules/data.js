@@ -36,22 +36,55 @@ const requireAuth = async (req, res, next) => {
   }
 };
 
-//Returns data for logged in user, returns user_data + profile_data { profile_data:{} }
+//Returns data for logged in user, returns user_data + profile_data { .., profile_data:{}, desiredData: [], interestData: [] }
 const getUserData = async (req) => {
   try {
     const { data, error } = await db
       .from("user_data")
       .select(`* , profile_data(*)`)
-      .eq("user_id", req.user.id);
+      .eq("user_id", req.user.id).maybeSingle();
+    if (error || !data) {
+      console.error("user_data fetch failed:", error);
+      return error ? { error: error.message } : { error: "User data not found" };
+    }
+    const { data: interestsData, error: interestsError } = await db
+      .from("user_interest")
+      .select("interest_id")
+      .eq("user_id", data.id);
+
+    const { data: desiredData, error: desiredError } = await db
+      .from("user_desired")
+      .select("interest_id")
+      .eq("user_id", data.id);
 
     if (error) console.error(error);
-    console.log("Get User Data: ", data);
-    return data;
+
+    const result = {
+      ...data,
+      interestsData: interestsData ?? [],
+      desiredData: desiredData ?? [],
+    };
+    console.log("Get User Data: ", result);
+    return result;
   } catch (err) {
     console.error(err);
   }
 };
 
+const getUserProfileData = async (userId) => {
+  try {
+    const {data, error} = await
+      db.from("user_data")
+      .select("user_id, name, profile_data(*)")
+      .eq("user_id", userId).maybeSingle();
+      console.log("CONSOLE LOG OF PROFILE DATA", data);
+      if (error) console.error(error);
+      return data;
+  }
+  catch (err) {
+    console.error(err);
+  }
+}
 // EXAMPLE: MATCH DATA RESULT [
 //   {//THIS IS THE MATCH ROW
 //     created_at: '2026-03-09T15:11:11+00:00',
@@ -218,25 +251,51 @@ const addMatch = async (idA, idB) => {
   }
 };
 
-const addContact = async (id, _type, _info) => {
+const addContact = async (userId, type, info) => {
   try {
+    await db.auth.refreshSession();
+    const { data: userData, error: userError } = await db
+      .from("user_data")
+      .select("*, profile_data(id)")
+      .eq('user_id', userId)  //This is the auth user id, we need to get the corresponding user_data row to link to profile_data
+      .maybeSingle();
+
+    if (userError || !userData) {
+      console.error("ERROR FETCHING USER DATA IN ADD CONTACT", userError);
+      return;
+    }
+
     const { data, error } = await db
-      .from("contact")
-      .insert({ user: id, type: _type, info: _info });
+      .from("Contact")
+      .upsert({ user: userData.profile_data.id, type: type, info: info }, { onConflict: "user, type" })
+      .select();
+    
     if (error) console.error(error);
     console.log("add contact data: ", data);
     return data;
+
   } catch (err) {
     console.error(err);
   }
 };
 
-const getContactData = async (id) => {
+const getContactData = async (userId) => {
   try {
+    await db.auth.refreshSession();
+    const { data: userData, error: userError } = await db
+    .from("user_data")
+    .select("*, profile_data(id)")
+    .eq("user_id", userId)
+    .single();
+
+    if (userError || !userData) {
+      console.error("ERROR FETCHING USER DATA IN GET CONTACT DATA", userError);
+      return;
+    }
     const { data, error } = await db
-      .from("contact")
+      .from("Contact")
       .select("type, info")
-      .eq("user", id);
+      .eq("user", userData.profile_data.id);
 
     if (error) console.error(error);
     console.log("get contact data: ", data);
@@ -253,7 +312,7 @@ const signUpUser = async (email, passowrd) => {
       password: passowrd,
     });
     if (error) console.error(error);
-    console.log("SIGNUPUSER CONSOLE LOG OF DATA", data);
+    //console.log("SIGNUPUSER CONSOLE LOG OF DATA", data);
     return data;
   } catch (err) {
     console.error(err);
@@ -284,6 +343,7 @@ const loginUser = async (email, password) => {
     let result = {
       message: data?.session?.access_token ? "Login sucess" : "Login failed",
       session: {
+        userId: data?.session?.user?.id,
         access_token: data?.session?.access_token || null,
         refresh_token: data?.session?.refresh_token || null,
         expires_in: data?.session?.expires_in || null,
@@ -309,6 +369,18 @@ const signOutUser = async (accessToken) => {
   }
 };
 
+const getCurrentUser = async () => {
+  try {
+    const { data : { user }, error } = await db.auth.getUser();
+    if (error) {
+      console.error(error);
+    }
+    return user;
+  }catch (err) {
+      console.error(err);
+    }
+  };
+
 const addUserDataRow = async (authUserId) => {
   try {
     const { data, error } = await db
@@ -316,7 +388,7 @@ const addUserDataRow = async (authUserId) => {
       .insert({ user_id: authUserId })
       .select();
     if (error) console.error(error);
-    console.log("ADD USER DATA ROW DATA", data);
+    //console.log("ADD USER DATA ROW DATA", data);
     return data;
   } catch (err) {
     console.error(err);
@@ -325,7 +397,7 @@ const addUserDataRow = async (authUserId) => {
 
 const getAllInterests = async () => {
   try {
-    const { data, error } = await db.from("interests").select();
+    const {data, error} = await db.from("interests").select();
     if (error) console.error(error);
     console.log("GET ALL INTERESTS");
     return data;
@@ -333,6 +405,40 @@ const getAllInterests = async () => {
     console.error(err);
   }
 };
+
+const saveProfileData = async (profileData, userId) => {
+  try {
+    await db.auth.refreshSession();
+    const { data: userData, error: userError } = await db
+    .from("user_data")
+    .select("*")
+    .eq('user_id', userId)  //This is the auth user id, we need to get the corresponding user_data row to link to profile_data
+    .single();
+    //console.log("USER DATA IN SAVE PROFILE DATA", userData);
+    if (userError) {
+      console.error("ERROR FETCHING USER DATA IN SAVE PROFILE DATA", userError);
+      return;
+    }
+    const insertData = {
+      ...profileData,
+      fk_user_data: userData.id,  // Use the id from user_data as the foreign key in profile_data
+    };
+    delete insertData.ProfilePictureURI; // Remove the ProfilePictureURI field before inserting into the database
+    console.log("PROFILE DATA SENT IN SAVE PROFILE DATA", insertData);
+    const { data, error } = await db
+      .from("profile_data")
+      .upsert(insertData, {
+        onConflict: "fk_user_data", // must match UNIQUE column
+      })
+      .select();
+    if (error) console.error(error);
+    //console.log("SAVE PROFILE DATA", data);
+    return data;
+  }
+    catch (err) {
+      console.error(err);
+    }
+}
 
 const getPaidMembers = async (req) => {
   try {
@@ -345,6 +451,94 @@ const getPaidMembers = async (req) => {
   } catch (err) { console.error(err); return 0; }
 };
 
+//Skills
+const saveUserInterests = async (interestIds, userId) => {
+  try {
+    await db.auth.refreshSession();
+    const { data: userData, error: userError } = await db
+      .from("user_data")
+      .select("id, profile_data(*)")
+      .eq("user_id", userId)
+      .single();
+
+    if (userError) {
+      console.error(
+        "ERROR FETCHING USER DATA IN SAVE USER INTERESTS",
+        userError,
+      );
+      return;
+    }
+    console.log("INTEREST IDS?", interestIds);
+    const ids = interestIds.map((i) => (typeof i === "object" ? i.id : i));
+
+    const rows = ids.map((id) => ({
+      user_id: userData.id,
+      interest_id: id,
+      profile_id: userData.profile_data.id,
+    }));
+
+    // Delete interests that are no longer in the list
+    const { error: deleteError } = await db
+      .from("user_interest")
+      .delete()
+      .eq("user_id", userData.id)
+      .not("interest_id", "in", `(${interestIds.join(",")})`);
+
+    // Insert new ones (only those that don't already exist)
+    const { data, error } = await db
+      .from("user_interest")
+      .upsert(rows, { onConflict: "user_id,interest_id" })
+      .select();
+
+    if (error) console.error(error);
+    console.log("SAVE USER SKILLS", data);
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const saveUserDesired = async (interestIds, userId) => {
+  try {
+    await db.auth.refreshSession();
+    const { data: userData, error: userError } = await db
+        .from("user_data")
+        .select("id")
+        .eq("user_id", userId)
+        .single();
+
+    if (userError) {
+      console.error("ERROR FETCHING USER DATA IN SAVE USER DESIRED", userError);
+      return;
+    }
+    const ids = interestIds.map((i) => (typeof i === "object" ? i.id : i));
+
+    const rows = ids.map((id) => ({
+      user_id: userData.id,
+      interest_id: id,
+    }));
+
+    // Delete interests that are no longer in the list
+    const { error: deleteError } = await db
+    .from("user_desired")
+    .delete()
+    .eq("user_id", userData.id)
+    .not("interest_id", "in", `(${interestIds.join(",")})`);
+
+    // Insert new ones (only those that don't already exist)
+    const { data, error } = await db
+    .from("user_desired")
+    .upsert(rows, { onConflict: "user_id,interest_id" })
+    .select();
+
+    if (error) console.error(error);
+    console.log("SAVE USER DESIRED", data);
+    return data;
+  }
+  catch (err) {
+    console.error(err);
+  }
+};
 const getNonPaidMembers = async (req) => {
   try {
     const { count, error } = await db
@@ -493,7 +687,7 @@ const getStats = async () => {
     getSkillStats(),
   ]);
 
-  console.log("STATS RESULT:", { totalUsers, paidMembers, freeMembers, contactExposedMatches, totalMatches, avgMatchScore, noContactInfo, completeProfiles, totalSkills }); // ← here
+  //console.log("STATS RESULT:", { totalUsers, paidMembers, freeMembers, contactExposedMatches, totalMatches, avgMatchScore, noContactInfo, completeProfiles, totalSkills }); // ← here
 
   return {
     totalUsers,
@@ -516,13 +710,18 @@ export {
   getMatchesThatContacted,
   getNonPaidMembers,
   getPaidMembers,
-  getUserData,
   getAllInterests,
+  getUserData,
+  getUserProfileData,
   signUpUser,
+  getCurrentUser,
   addUserDataRow,
   loginUser,
   requireAuth,
   signOutUser,
+  saveProfileData,
+  saveUserInterests,
+  saveUserDesired,
   getMatchData,
   addMatch,
   addContact,

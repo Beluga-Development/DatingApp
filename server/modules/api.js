@@ -8,6 +8,9 @@ import {
   getUserData,
   loginUser,
   requireAuth,
+  saveProfileData,
+  saveUserInterests,
+  saveUserDesired,
   signOutUser,
   signUpUser,
   getMatchData,
@@ -17,6 +20,7 @@ import {
   getPaidMembers,
   getNonPaidMembers,
   getMatchesThatContacted,
+
 } from "./data.js";
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
 
@@ -32,6 +36,7 @@ app.use((req, _res, next) => {
   console.warn(
     `[${timestamp.toDateString()} ${timestamp.toTimeString()}] / ${timestamp.toISOString()}`,
   );
+  // Log request details for debugging
   console.log(req.method, req.hostname, req.path);
   console.log("headers:", req.headers);
   console.log("query:", req.query);
@@ -51,16 +56,22 @@ app.get("/interests", async (req, res) => {
 app.post("/sign_up", async (req, res) => {
   const { email, password } = req.body;
   let result = await signUpUser(email, password);
-  let rowResult;
-  if (result.user) {
-    rowResult = await addUserDataRow(result.user.id);
+
+  if (!result?.user) {
+    return res.send({ message: "Sign up failed. Please try again later." });
   }
+
+  if (result.user.identities?.length === 0) {
+    return res.send({ message: "Email taken" });
+  }
+
+  let rowResult = await addUserDataRow(result.user.id);
   res.send({
-    message: rowResult.id ? "Account created please login" : "Email taken",
+    message: rowResult?.[0]?.id ? "Account created please login" : "Sign up failed",
   });
 });
 
-app.post("/user_data", requireAuth, async (req, res) => {
+app.get("/user_data", requireAuth, async (req, res) => {
   let result = await getUserData(req);
   res.send(result);
 });
@@ -70,29 +81,29 @@ app.post("/match_data", requireAuth, async (req, res) => {
   res.send(result);
 });
 
-app.post("/contact_data/:id", requireAuth, async (req, res) => {
-  const field_key = req.params.id;
-  console.log("Field-kEY", field_key);
-  let result = await getContactData(field_key);
-  res.send(result);
+app.get("/contact_data", requireAuth, async (req, res) => {
+  const userId = req.user.id;
+  //console.log("Field-key", field_key);
+  let result = await getContactData(userId);
+  res.json(result || { error: "No profile data found" });
 });
 
-app.post("/add_contact/:id/:type/:info", requireAuth, async (req, res) => {
-  const field_key1 = req.params.id;
-  const field_key2 = req.params.type;
-  const field_key3 = req.params.info;
-  console.log("Field-kEY", field_key1);
-  let result = await addContact(field_key1, field_key2, field_key3);
-  res.send(result);
+app.post("/add_contact", requireAuth, async (req, res) => {
+  let userId = req.user.id;
+  let type = req.body.type;
+  let info = req.body.info;
+  let result = await addContact(userId, type, info);
+  res.json(result || { error: "Failed to add contact data" });
 });
 
 app.post("/add_match/:idA/:idB", requireAuth, async (req, res) => {
   const field_key1 = req.params.idA;
   const field_key2 = req.params.idB;
-  console.log("Field-kEY", field_key1);
+  //console.log("Field-key", field_key1);
   let result = await addMatch(field_key1, field_key2);
   res.send(result);
 });
+
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -118,6 +129,28 @@ app.post("/get_non_paid_members", requireAuth, async (req, res) => {
 
 app.post("/get_matches_contacted", requireAuth, async (req, res) => {
   let result = await getMatchesThatContacted(req);
+  res.send(result || { error: "No profile data found" });
+});
+
+app.post("/profile_data", requireAuth, async (req, res) => {
+  const profileData = req.body;
+  const userId = req.user.id;
+  //console.log("CURRENT USERID", user?.id);
+  let result = await saveProfileData( profileData, userId );
+  //console.log("RESULT OF SAVE PROFILE DATA", result);
+  res.send(result);
+});
+
+app.post("/user_interests", requireAuth, async (req, res) => {
+  const { interests } = req.body;
+  const userId = req.user.id;
+  let result = await saveUserInterests(interests, userId);
+  res.send(result);
+});
+app.post("/user_desired", requireAuth, async (req, res) => {
+  const { desired } = req.body;
+  const userId = req.user.id;
+  let result = await saveUserDesired(desired, userId);
   res.send(result);
 });
 app.post("/get_stats", requireAuth, async (req, res) => {
