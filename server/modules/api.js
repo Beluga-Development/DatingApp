@@ -16,6 +16,7 @@ import {
   getMatchData,
   addMatch,
   addContact,
+  generateMatches,
   getContactData,
   getPaidMembers,
   getNonPaidMembers,
@@ -80,7 +81,10 @@ app.post("/match_data", requireAuth, async (req, res) => {
   let result = await getMatchData(req);
   res.send(result);
 });
-
+app.post("/generate_matches", requireAuth, async (req, res) => {
+  let result = await generateMatches(req);
+  res.json(result);
+});
 app.get("/contact_data", requireAuth, async (req, res) => {
   const userId = req.user.id;
   //console.log("Field-key", field_key);
