@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as api from "../util/api.js";
 import styles, { palette } from "../style.js";
 
-function Login({ setIsLoggedIn }) {
+function Login({ setIsLoggedIn, setIsProfileComplete }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
@@ -52,6 +52,14 @@ function Login({ setIsLoggedIn }) {
       let result = await api.auth.loginUser(email, password);
       setIsError(false);
       setConfirmation(result.message);
+      console.log("Login result:", result);
+      if(result?.session?.access_token){
+      let userData = await api.data.getCurrentProfileData();
+      //console.log("Users profile data on login:", userData?.profile_data);
+      let profileData = userData?.profile_data;
+      setIsProfileComplete(Boolean(profileData)); // Assuming profile is complete if FirstName exists
+      }
+      //This has to be at the bottom because we want to make sure the profile data is fetched and the profile completeness is set before we update the logged in state which will trigger the redirect in the useEffect in the login screen.
       setIsLoggedIn(Boolean(result?.session?.access_token));
     } catch (error) {
       setIsError(true);

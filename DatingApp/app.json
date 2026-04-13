@@ -4,6 +4,10 @@
     "slug": "dating-app",
     "scheme": "datingapp",
     "version": "1.0.0",
+    "extra": {
+      "SUPABASE_URL": "https://tnsmhpgykyfzursjelvx.supabase.co",
+      "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRuc21ocGd5a3lmenVyc2plbHZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NjE3MDIsImV4cCI6MjA4ODMzNzcwMn0.Q5rXmfJxq_u3iU3ctAZLFBCVFvCzOy38yLJ8OdiPFCg"
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
