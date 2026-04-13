@@ -7,7 +7,8 @@ import {
   Image,
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 import * as api from "../../util/api.js";
 import Button from "../../components/Button";
 import style from "../../style.js";
@@ -27,6 +28,7 @@ export default function MatchesScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [viewProfile, setViewProfile] = useState();
+  const [generating, setGenerating] = useState(false);
 
   const calculateAge = (birthDate) => {
     const today = new Date();
@@ -52,6 +54,16 @@ export default function MatchesScreen() {
     }
   };
 
+  const handleGenerateMatches = async () => {
+    setGenerating(true);
+    setLoading(true);
+    await api.data.generateMatches();
+    const result = await getMatchData();
+    setMatches(result);
+    setLoading(false);
+    setGenerating(false);
+  };
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setLoading(true);
@@ -62,16 +74,17 @@ export default function MatchesScreen() {
     }, 2000);
   }, []);
 
-  useEffect(() => {
-    const loadMatches = async () => {
-      let result = await getMatchData();
-      setMatches(result);
-      setLoading(false);
-      //console.log(result[0].profile_data.contact);
-      //console.log(result[0].profile_data.user_interest);
-    };
-    loadMatches();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const loadMatches = async () => {
+        setLoading(true);
+        let result = await getMatchData();
+        setMatches(result);
+        setLoading(false);
+      };
+      loadMatches();
+    }, [])
+  );
 
   return (
     <View style={style.app}>
@@ -157,6 +170,13 @@ export default function MatchesScreen() {
               );
             })}
       </ScrollView>
+
+      <Button
+        text={generating ? "Finding..." : "Find New Matches"}
+        onPress={handleGenerateMatches}
+        style={{ margin: 20, marginBottom: 120 }}
+      />
+
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -220,7 +240,6 @@ export default function MatchesScreen() {
                 <Text style={style.matchScoreText}>
                   {viewProfile?.match_score}% Match Score
                 </Text>
-
                 <View style={style.matchScoreBar}>
                   <View
                     style={[
@@ -253,15 +272,13 @@ export default function MatchesScreen() {
                 <View style={style.interests}>
                   <Text style={style.interestsHeader}>Interests</Text>
                   {viewProfile?.profile_data.user_interest.map(
-                    (interest, index) => {
-                      return (
-                        <View key={index} style={style.interestItem}>
-                          <Text style={style.interestText}>
-                            {interest.interests.name}
-                          </Text>
-                        </View>
-                      );
-                    },
+                    (interest, index) => (
+                      <View key={index} style={style.interestItem}>
+                        <Text style={style.interestText}>
+                          {interest.interests.name}
+                        </Text>
+                      </View>
+                    )
                   )}
                 </View>
               </View>
