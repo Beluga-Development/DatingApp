@@ -28,7 +28,8 @@ useEffect(() => {
       setLoading(false); // stop loading if not logged in
     } else {
         const profileData = await api.data.getCurrentProfileData();
-        setIsProfileComplete(Boolean(profileData?.length > 0));
+        console.log("Profile data on login check:", profileData.profile_data);
+        setIsProfileComplete(Boolean(profileData.profile_data.FirstName)); // Assuming profile is complete if FirstName exists
         setLoading(false);
     }
   };
