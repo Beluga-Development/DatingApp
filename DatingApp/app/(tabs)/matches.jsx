@@ -115,7 +115,11 @@ export default function MatchesScreen() {
                 <View key={index} style={style.matchCard}>
                   <Button
                     text=""
-                    picture={pictures[index]}
+                    picture={
+                      match.profile_data.ProfilePicture
+                        ? match.profile_data.ProfilePicture
+                        : "https://media.discordapp.net/attachments/1149389094653276191/1493100788279414784/images.png?ex=69ddbdf8&is=69dc6c78&hm=c54ace950e628bd4e4868036aa6e3936701c90e99ee064a015bffd8572688df2&=&format=webp&quality=lossless&width=249&height=187"
+                    }
                     style={style.profileButton}
                     onPress={() => {
                       setModalVisible(true);
@@ -205,7 +209,11 @@ export default function MatchesScreen() {
               <Text style={style.modalTitle}>Viewing Profile</Text>
               <View style={style.modalHeaderUnderline} />
               <Image
-                source={pictures[viewProfile?.index]}
+                source={{
+                  uri: viewProfile?.profile_data.ProfilePicture
+                    ? viewProfile?.profile_data.ProfilePicture
+                    : "https://media.discordapp.net/attachments/1149389094653276191/1493100788279414784/images.png?ex=69ddbdf8&is=69dc6c78&hm=c54ace950e628bd4e4868036aa6e3936701c90e99ee064a015bffd8572688df2&=&format=webp&quality=lossless&width=249&height=187",
+                }}
                 style={style.modalPicture}
               />
               <View style={style.modalContent}>
