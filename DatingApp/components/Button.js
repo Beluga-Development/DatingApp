@@ -25,7 +25,7 @@ function Button(props) {
     >
       {props?.picture ? (
         <Image
-          source={props.picture}
+          source={{ uri: props.picture }}
           style={{ width: "100%", height: "100%", borderRadius: 32 }}
         />
       ) : props?.icon ? (
