@@ -267,7 +267,7 @@ const addContact = async (userId, type, info) => {
 
     const { data, error } = await db
       .from("Contact")
-      .insert({ user: userData.profile_data.id, type: type, info: info })
+      .upsert({ user: userData.profile_data.id, type: type, info: info }, { onConflict: "user, type" })
       .select();
     
     if (error) console.error(error);
