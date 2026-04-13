@@ -456,13 +456,16 @@ const saveUserInterests = async (interestIds, userId) => {
   try {
     await db.auth.refreshSession();
     const { data: userData, error: userError } = await db
-        .from("user_data")
-        .select("id")
-        .eq("user_id", userId)
-        .single();
+      .from("user_data")
+      .select("id, profile_data(*)")
+      .eq("user_id", userId)
+      .single();
 
     if (userError) {
-      console.error("ERROR FETCHING USER DATA IN SAVE USER INTERESTS", userError);
+      console.error(
+        "ERROR FETCHING USER DATA IN SAVE USER INTERESTS",
+        userError,
+      );
       return;
     }
     console.log("INTEREST IDS?", interestIds);
@@ -471,26 +474,26 @@ const saveUserInterests = async (interestIds, userId) => {
     const rows = ids.map((id) => ({
       user_id: userData.id,
       interest_id: id,
+      profile_id: userData.profile_data.id,
     }));
 
     // Delete interests that are no longer in the list
     const { error: deleteError } = await db
-    .from("user_interest")
-    .delete()
-    .eq("user_id", userData.id)
-    .not("interest_id", "in", `(${interestIds.join(",")})`);
+      .from("user_interest")
+      .delete()
+      .eq("user_id", userData.id)
+      .not("interest_id", "in", `(${interestIds.join(",")})`);
 
     // Insert new ones (only those that don't already exist)
     const { data, error } = await db
-    .from("user_interest")
-    .upsert(rows, { onConflict: "user_id,interest_id" })
-    .select();
+      .from("user_interest")
+      .upsert(rows, { onConflict: "user_id,interest_id" })
+      .select();
 
     if (error) console.error(error);
     console.log("SAVE USER SKILLS", data);
     return data;
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err);
   }
 };
