@@ -174,7 +174,12 @@ export default function MatchesScreen() {
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
-        {showContact ? (
+        {showContact ? 
+        (
+
+          viewProfile?.profile_data.isPaid ?
+          (
+
           <View style={style.modalContainer}>
             <Button
               icon={{ name: "close", size: 24 }}
@@ -210,6 +215,50 @@ export default function MatchesScreen() {
               ))}
             </View>
           </View>
+            ) :
+            (
+              <View style={style.modalContainer}>
+            <Button
+              icon={{ name: "close", size: 24 }}
+              style={style.closeButton}
+              onPress={() => {
+                setModalVisible(false);
+                setShowContact(false);
+              }}
+            />
+            <Text style={style.modalTitle}>Become a Paid member?</Text>
+            <Text style={{
+                      fontSize: 20,
+                      textAlign: "center"
+                    }}>
+                      only paid members can view other member's contact details</Text>
+            <Button
+            text="Yes"
+                    style={{
+                      width: 100,
+                      height: 50,
+                      borderRadius: 20,
+                      backgroundColor: "#170101",
+                    }}
+                    onPress={async () =>
+                      await api.data.setPaid(true)
+                    }
+                  Yes />
+
+                  <Button
+                  text="No"
+                    style={{
+                      width: 100,
+                      height: 50,
+                      borderRadius: 20,
+                      backgroundColor: "#100101",
+                    }}
+                    onPress={async () =>
+                      setModalVisible(false)
+                    }
+                  />
+          </View>
+            )
         ) : (
           <ScrollView>
             <View style={style.modalContainer}>
