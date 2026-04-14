@@ -1,0 +1,7 @@
+node_modules/
+DatingApp/eslint.config.js
+DatingApp/.expo
+DatingApp/dist
+DatingApp/build
+DatingApp/android
+server/.env

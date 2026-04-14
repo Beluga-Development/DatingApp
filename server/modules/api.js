@@ -16,10 +16,12 @@ import {
   getMatchData,
   addMatch,
   addContact,
+  generateMatches,
   getContactData,
   getPaidMembers,
   getNonPaidMembers,
   getMatchesThatContacted,
+  setPaid
 
 } from "./data.js";
 // Reads PORT from the OS, the --env-file flag, or defaults to 9000
@@ -80,7 +82,10 @@ app.post("/match_data", requireAuth, async (req, res) => {
   let result = await getMatchData(req);
   res.send(result);
 });
-
+app.post("/generate_matches", requireAuth, async (req, res) => {
+  let result = await generateMatches(req);
+  res.json(result);
+});
 app.get("/contact_data", requireAuth, async (req, res) => {
   const userId = req.user.id;
   //console.log("Field-key", field_key);
@@ -147,6 +152,20 @@ app.post("/user_interests", requireAuth, async (req, res) => {
   let result = await saveUserInterests(interests, userId);
   res.send(result);
 });
+
+
+app.patch("/pay", requireAuth, async (req, res) => {
+  const { pay } = req.body;
+  const userId = req.user.id;
+  let result = await setPaid(pay, userId);
+  res.json({ success: true, data: result });
+});
+
+
+
+
+
+
 app.post("/user_desired", requireAuth, async (req, res) => {
   const { desired } = req.body;
   const userId = req.user.id;
