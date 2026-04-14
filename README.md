@@ -7,7 +7,7 @@
 
 ## Technology stack
 
-- Front-end: React Native, Expo, JavaScript, react-navigation, reanimated
+- Front-end: React Native, Expo, JavaScript, react-navigation, reanimated, Supabase
 - Backend: Node.js, Express, Supabase (auth + PostgREST), CORS
 - Storage: Supabase database and secure local storage via `expo-secure-store`
 - Android companion: Native Android folder for Expo build
@@ -15,7 +15,7 @@
 ## What currently works
 
 - Login
-- Tab navigation layout with `Home`, `Matches`, `Profile` in `app/(tabs)`
+- Tab navigation layout with `Matches`, `Profile` in `app/(tabs)`
 - Matches screen with profile viewing modal
 - Contact information display with copy-to-clipboard functionality
 - Auth flow with Bearer token middleware (`requireAuth`) on protected endpoints
@@ -25,7 +25,7 @@
 - Statistics page
 
 ## In progress
-
+- Paid users
 
 
 ## Dependencies to install
