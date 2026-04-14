@@ -7,12 +7,16 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { useState } from "react";
-export function TabBar({ state, descriptors, navigation }) {
+export function TabBar({ state, descriptors, navigation, profileData }) {
   const { colors } = useTheme();
   const { buildHref } = useLinkBuilder();
   const [dimensions, setDimensions] = useState({ height: 70, width: 275 });
 
-  const buttonWidth = dimensions.width / state.routes.length;
+  const buttonWidth =
+    dimensions.width /
+    (profileData?.profile_data?.isAdmin
+      ? state.routes.length
+      : state.routes.length - 1);
 
   const onTabbarLayout = (e) => {
     setDimensions({
@@ -52,6 +56,8 @@ export function TabBar({ state, descriptors, navigation }) {
               ? options.title
               : route.name;
 
+        if (label === "Stats" && profileData.profile_data.isAdmin === false)
+          return;
         const isFocused = state.index === index;
 
         const onPress = () => {

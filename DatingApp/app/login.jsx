@@ -9,55 +9,59 @@ import { Text } from "react-native";
 export default function LoginScreen() {
   const [loading, setLoading] = useState(true);
   const { isLoggedIn, setIsLoggedIn } = useContext(SessionContext);
-  const { isProfileComplete, setIsProfileComplete } = useContext(SessionContext);
+  const { isProfileComplete, setIsProfileComplete } =
+    useContext(SessionContext);
+  const { profileData, setProfileData } = useContext(SessionContext);
 
-const handleSetIsLoggedIn = (loggedIn) => {
-  setIsLoggedIn(loggedIn);
-};
-const handleSetIsProfileComplete = (profileComplete) => {
-  //console.log("Setting profile complete status to:", profileComplete);
-  setIsProfileComplete(profileComplete);
-}
+  const handleSetIsLoggedIn = (loggedIn) => {
+    setIsLoggedIn(loggedIn);
+  };
+  const handleSetIsProfileComplete = (profileComplete) => {
+    //console.log("Setting profile complete status to:", profileComplete);
+    setIsProfileComplete(profileComplete);
+  };
 
-useEffect(() => {
-  const checkIfAlreadyLoggedIn = async () => {
-    const token = await api.getAccessToken();
-    setIsLoggedIn(!!token);
-    
-    if (!token) {
-      setLoading(false); // stop loading if not logged in
-    } else {
+  useEffect(() => {
+    const checkIfAlreadyLoggedIn = async () => {
+      const token = await api.getAccessToken();
+      setIsLoggedIn(!!token);
+
+      if (!token) {
+        setLoading(false); // stop loading if not logged in
+      } else {
         const profileData = await api.data.getCurrentProfileData();
+        setProfileData(profileData);
         console.log("Profile data on login check:", profileData.profile_data);
         setIsProfileComplete(Boolean(profileData.profile_data)); // Assuming profile is complete if FirstName exists
         setLoading(false);
+      }
+    };
+
+    checkIfAlreadyLoggedIn();
+  }, []);
+
+  // useEffect(() => {
+  //   if (!isLoggedIn) return;
+
+  //   const fetchProfile = async () => {
+  //     const profileComplete = Boolean(await api.data.getCurrentProfileData());
+  //     setIsProfileComplete(profileComplete);
+  //     //console.log("Profile complete status:", profileComplete);
+  //     setLoading(false);
+  //   };
+
+  //   fetchProfile();
+  // }, [isLoggedIn]);
+
+  useEffect(() => {
+    if (!loading && isLoggedIn) {
+      console.log(
+        "Redirecting based on profile completeness:",
+        isProfileComplete,
+      );
+      router.replace(isProfileComplete ? "/(tabs)" : "/profile_creation");
     }
-  };
-
-  checkIfAlreadyLoggedIn();
-}, []);
-
-// useEffect(() => {
-//   if (!isLoggedIn) return;
-
-//   const fetchProfile = async () => {
-//     const profileComplete = Boolean(await api.data.getCurrentProfileData());
-//     setIsProfileComplete(profileComplete);
-//     //console.log("Profile complete status:", profileComplete);
-//     setLoading(false);
-//   };
-
-//   fetchProfile();
-// }, [isLoggedIn]);
-
-useEffect(() => {
-  if (!loading && isLoggedIn) {
-    console.log("Redirecting based on profile completeness:", isProfileComplete);
-    router.replace(
-      isProfileComplete ? "/(tabs)" : "/profile_creation"
-    );
-  }
-}, [loading, isLoggedIn]);
+  }, [loading, isLoggedIn]);
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 16 }}>
