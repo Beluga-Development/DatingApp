@@ -21,6 +21,7 @@ export default function MatchesScreen() {
   const [showContact, setShowContact] = useState(false);
   const [viewProfile, setViewProfile] = useState();
   const [generating, setGenerating] = useState(false);
+  const [paid, setPaid] = useState(false);
 
   const calculateAge = (birthDate) => {
     const today = new Date();
@@ -74,6 +75,12 @@ export default function MatchesScreen() {
         setMatches(result);
         setLoading(false);
       };
+      const checkPaidStatus = async () => {
+        const currrentUser = await api.data.getProfileContext();
+        console.log(currrentUser);
+        setPaid(currrentUser.isPaid);
+      };
+      checkPaidStatus();
       loadMatches();
     }, []),
   );
@@ -177,7 +184,7 @@ export default function MatchesScreen() {
         {showContact ? 
         (
 
-          viewProfile?.profile_data.isPaid ?
+          paid ?
           (
 
           <View style={style.modalContainer}>
