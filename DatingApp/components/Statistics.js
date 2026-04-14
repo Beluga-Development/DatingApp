@@ -5,6 +5,7 @@ import SectionDivider from "./SectionDivider.js";
 import TitledNumDisplay from "./TitledNumDisplay.js";
 import TitledText from "./TitledText.js";
 import * as api from "../util/api.js";
+import style from "../style";
 
 export default function Statistics() {
     const [stats, setStats] = useState(null);
@@ -35,7 +36,7 @@ export default function Statistics() {
     return (
         <View style={branding.app}>
             <Text style={branding.header}>Statistics</Text>
-
+            <View style={style.headerUnderline} />
             <ScrollView
                 contentContainerStyle={branding.dashScrollContent}
                 showsVerticalScrollIndicator={false}

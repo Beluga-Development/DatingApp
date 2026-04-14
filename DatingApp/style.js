@@ -29,7 +29,7 @@ export default StyleSheet.create({
     height: 4,
     margin: "auto",
     borderRadius: 60,
-    marginTop: 5,
+    marginVertical: 5,
   },
 
   list: {

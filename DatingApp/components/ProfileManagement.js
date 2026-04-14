@@ -26,6 +26,7 @@ import * as api from "../util/api.js";
 import branding, { palette } from "../style.js";
 import ListChipper from "./ListChipper";
 import { router } from "expo-router";
+import style from "../style";
 const genderOptions = ["Male", "Female", "Non-binary", "Other"];
 
 const sexualityOptions = [
@@ -282,6 +283,7 @@ function ProfileManagement(props) {
               </TouchableOpacity>
           )}
         </View>
+        <View style={style.headerUnderline} />
         <Modal
           visible={showPfpModal}
           transparent={true}
