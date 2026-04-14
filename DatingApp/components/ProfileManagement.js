@@ -173,8 +173,10 @@ function ProfileManagement(props) {
         console.log("Result of API call to save profile data:", result);
         alert("Profile Created!");
         if (!props.editMode) {
-          reloadPage(); // Trigger profile data reload in useEffect
+          reloadPage();
           router.replace("/(tabs)");
+        } else if (props.onSave) {
+          props.onSave();
         }
       } else {
         props.setIsProfileComplete(false);
@@ -209,7 +211,7 @@ function ProfileManagement(props) {
             console.log("Desired data:", desiredData);
             console.log("Profile data fetched for editing:", profileData);
 
-            const contacts = contactData || [];
+            const contacts = Array.isArray(contactData) ? contactData : [];
             setProfile({
               firstName: profileData.FirstName || "",
               lastName: profileData.LastName || "",
